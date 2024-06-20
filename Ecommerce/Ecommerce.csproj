@@ -12,7 +12,6 @@
     <Folder Include="Data\" />
     <Folder Include="Models\Db\" />
     <Folder Include="Models\ViewModels\" />
-    <Folder Include="Views\Shared\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\lib\bootstrap\" />
     <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
