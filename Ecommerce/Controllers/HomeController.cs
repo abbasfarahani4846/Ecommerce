@@ -1,4 +1,5 @@
 using Ecommerce.Models;
+using Ecommerce.Models.db;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,15 +10,19 @@ namespace Ecommerce.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly OnlineShopContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger,OnlineShopContext context)
         {
+            _context = context;
             _logger = logger;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var banners = _context.Banners.ToList();
+
+            return View(Tuple.Create(banners));
         }
 
         public IActionResult Privacy()
