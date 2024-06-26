@@ -1,7 +1,8 @@
-﻿@model Tuple<List<Ecommerce.Models.db.Banner>>
-
-@{
+﻿@{
     ViewData["Title"] = "Home page";
+
+    var banner = ViewData["banners"] as List<Ecommerce.Models.db.Banner>;
+
 }
 
 
@@ -16,27 +17,35 @@
             "speed": 300,
             "infinite": true
         }'>
-        @foreach (var item in Model.Item1.Where(x=>x.Position=="slider").OrderBy(x => x.Priority).ToList())
-        {
-            <div class="single_slider d-flex align-items-center" data-bgimg="/images/banners/@item.ImageName">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-7">
-                            <div class="slider_text">
 
-                                <h1>
-                                    @item.Title
-                                </h1>
-                                <p>
-                                    @item.Description
-                                </p>
-                                <a class="btn btn-primary" href="@item.Link">Explore Now</a>
+        @if (banner != null)
+        {
+
+            var slider = banner.Where(x => x.Position == "slider").OrderBy(x => x.Priority).ToList();
+
+            foreach (var item in slider)
+            {
+                <div class="single_slider d-flex align-items-center" data-bgimg="/images/banners/@item.ImageName">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-7">
+                                <div class="slider_text">
+
+                                    <h1>
+                                        @item.Title
+                                    </h1>
+                                    <p>
+                                        @item.Description
+                                    </p>
+                                    <a class="btn btn-primary" href="@item.Link">Explore Now</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         }
+
 
     </div>
 </section>
@@ -96,25 +105,30 @@
             <h2>featured collections</h2>
         </div>
         <div class="banner_container d-flex">
-              @foreach (var item in Model.Item1.Where(x=>x.Position=="banner1").OrderBy(x => x.Priority).ToList())
+            @if (banner != null)
             {
-                <figure class="single_banner position-relative mr-30">
-                    <img src="/images/banners/@item.ImageName" alt="@item.Title">
-                    <figcaption class="banner_text position-absolute">
-                        <h3>
-                            @item.Title
-                        </h3>
-                        <p>
-                            @item.Description
-                        </p>
-                       @if (!string.IsNullOrEmpty(item.Link))
-                        {
-                            <a class="btn btn-primary" href="@item.Link">Shop Now</a>
-                        }
-                    </figcaption>
-                </figure>
+                var banner1 = banner.Where(x => x.Position == "banner1").OrderBy(x => x.Priority).ToList();
+
+                foreach (var item in banner1)
+                {
+                    <figure class="single_banner position-relative mr-30">
+                        <img src="/images/banners/@item.ImageName" alt="@item.Title">
+                        <figcaption class="banner_text position-absolute">
+                            <h3>
+                                @item.Title
+                            </h3>
+                            <p>
+                                @item.Description
+                            </p>
+                            @if (!string.IsNullOrEmpty(item.Link))
+                            {
+                                <a class="btn btn-primary" href="@item.Link">Shop Now</a>
+                            }
+                        </figcaption>
+                    </figure>
+                }
             }
-          
+
         </div>
     </div>
 </section>
@@ -2161,25 +2175,28 @@
 <section class="banner_section banner_style2 mb-109">
     <div class="container-fluid">
         <div class="row">
-              @foreach (var item in Model.Item1.Where(x=>x.Position=="banner2").OrderBy(x => x.Priority).ToList())
+            @if (banner != null)
             {
-                <div class="col-lg-6 col-md-6 col-sm-6">
-                <figure class="single_banner position-relative">
-                    <img src="/images/banners/@item.ImageName" alt="@item.Title">
-                    <div class="banner_text position-absolute">
-                        <h3>
-                            @item.Title
-                        </h3>
-                        <p>
-                            @item.Description
-                        </p>
-                        <a class="btn btn-primary" href="@item.Link">Shop Now</a>
-                    </div>
+                var banner2 = banner.Where(x => x.Position == "banner2").OrderBy(x => x.Priority).ToList();
+                @foreach (var item in banner2)
+                {
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <figure class="single_banner position-relative">
+                            <img src="/images/banners/@item.ImageName" alt="@item.Title">
+                            <div class="banner_text position-absolute">
+                                <h3>
+                                    @item.Title
+                                </h3>
+                                <p>
+                                    @item.Description
+                                </p>
+                                <a class="btn btn-primary" href="@item.Link">Shop Now</a>
+                            </div>
 
-                </figure>
-            </div>
+                        </figure>
+                    </div>
+                }
             }
-           
         </div>
     </div>
 </section>
@@ -4222,4 +4239,4 @@
         </div>
     </div>
 </section>
-<!-- product section end -->
+<!-- product section end --> 

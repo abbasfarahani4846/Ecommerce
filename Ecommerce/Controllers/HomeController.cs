@@ -12,7 +12,7 @@ namespace Ecommerce.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly OnlineShopContext _context;
 
-        public HomeController(ILogger<HomeController> logger,OnlineShopContext context)
+        public HomeController(ILogger<HomeController> logger, OnlineShopContext context)
         {
             _context = context;
             _logger = logger;
@@ -21,8 +21,9 @@ namespace Ecommerce.Controllers
         public IActionResult Index()
         {
             var banners = _context.Banners.ToList();
+            ViewData["banners"] = null;
 
-            return View(Tuple.Create(banners));
+            return View();
         }
 
         public IActionResult Privacy()
