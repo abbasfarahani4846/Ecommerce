@@ -17,6 +17,8 @@ public partial class OnlineShopContext : DbContext
 
     public virtual DbSet<Banner> Banners { get; set; }
 
+    public virtual DbSet<Category> Categories { get; set; }
+
     public virtual DbSet<Menu> Menus { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -32,6 +34,11 @@ public partial class OnlineShopContext : DbContext
             entity.Property(e => e.Link).HasMaxLength(100);
             entity.Property(e => e.Position).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.Property(e => e.Title).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Menu>(entity =>
