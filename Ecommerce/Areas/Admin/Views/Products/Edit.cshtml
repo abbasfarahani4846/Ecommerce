@@ -1,0 +1,116 @@
+﻿@model Ecommerce.Models.db.Product
+
+@{
+    ViewData["Title"] = "Edit";
+
+}
+
+<h1>Edit</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImageName" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Text" class="control-label"></label>
+                <textarea asp-for="Text" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Text" class="text-danger"></span>
+            </div
+          @*   <p>
+                <p>@Html.Raw(Model.Text.Replace("\n", "<br>"))</p>
+            </p> *@
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount" class="control-label"></label>
+                <input asp-for="Discount" class="form-control" />
+                <span asp-validation-for="Discount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageName" class="control-label"></label>
+                <input name="image" type="file" class="form-control" />
+                <img src="/images/products/@Model.ImageName" class="img-thumbnail" style="max-width:200px" />
+                <span asp-validation-for="ImageName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">
+                    Gallery
+                </label>
+                <input name="gallery" type="file" class="form-control" multiple />
+                <br />
+                @{
+                    var galleries = ViewData["gallery"] as List<Ecommerce.Models.db.ProductGalery>;
+                    <div class="row">
+                        @if (galleries != null)
+                        {
+                            foreach (var item in galleries)
+                            {
+                                <div class="col-md-3 col-12" id="@item.Id">
+                                    <img src="/images/products/@item.ImageName" class="img-thumbnail" />
+                                    <a class="btn btn-danger w-100" onclick="deleteGallery(@item.Id)">
+                                        delete
+                                    </a>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <label asp-for="Qty" class="control-label"></label>
+                <input asp-for="Qty" class="form-control" />
+                <span asp-validation-for="Qty" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tags" class="control-label"></label>
+                <input asp-for="Tags" class="form-control" />
+                <span asp-validation-for="Tags" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function deleteGallery(id) {
+            $.ajax({
+                url: '/admin/products/DeleteGallery?id=' + id,
+                type: 'GET',
+                success: function (response) {
+                    $("#" + id).slideUp();
+                },
+                error: function (xhr, status, error) {
+                    console.log('ID not found');
+                }
+            });
+        }
+    </script>
+}

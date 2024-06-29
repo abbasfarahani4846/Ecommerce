@@ -12,7 +12,7 @@
     <Folder Include="Data\" />
     <Folder Include="Models\Db\" />
     <Folder Include="Models\ViewModels\" />
-    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\images\products\" />
     <Folder Include="wwwroot\lib\bootstrap\" />
     <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
     <Folder Include="wwwroot\lib\jquery-validation-unobtrusive\" />
