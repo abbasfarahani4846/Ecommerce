@@ -99,22 +99,21 @@ namespace Ecommerce.Areas.Admin.Controllers
                 {
                     foreach (var item in gallery)
                     {
+                        var newGallery = new ProductGalery();
+                        newGallery.ProductId = product.Id;
 
-                        var imgName = Guid.NewGuid() + Path.GetExtension(item.FileName);
+                        newGallery.ImageName = Guid.NewGuid() + Path.GetExtension(item.FileName);
 
                         //ذخیره تصویر اصلی
                         string ImagePath = Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                        imgName);
+                                                        newGallery.ImageName);
                         using (var stream = new FileStream(ImagePath, FileMode.Create))
                         {
                             item.CopyTo(stream);
                         }
 
-                        _context.ProductGaleries.Add(new ProductGalery
-                        {
-                            ImageName = imgName,
-                            ProductId = product.Id
-                        });
+
+                        _context.ProductGaleries.Add(newGallery);
                     }
                 }
 
@@ -271,7 +270,7 @@ namespace Ecommerce.Areas.Admin.Controllers
 
                     _context.ProductGaleries.RemoveRange(galleries);
                 }
-                
+
                 _context.Products.Remove(product);
             }
 
