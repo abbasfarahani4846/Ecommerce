@@ -57,20 +57,20 @@
                 <br />
                 @{
                     var galleries = ViewData["gallery"] as List<Ecommerce.Models.db.ProductGalery>;
-                    <div class="row">
-                        @if (galleries != null)
+                        <div class="row">
+                            @if (galleries != null)
                         {
                             foreach (var item in galleries)
                             {
-                                <div class="col-md-3 col-12" id="@item.Id">
-                                    <img src="/images/products/@item.ImageName" class="img-thumbnail" />
-                                    <a class="btn btn-danger w-100" onclick="deleteGallery(@item.Id)">
-                                        delete
-                                    </a>
-                                </div>
+                                    <div class="col-md-3 col-12" id="@item.Id">
+                                        <img src="/images/products/@item.ImageName" class="img-thumbnail" />
+                                        <a class="btn btn-danger w-100" href="/admin/products/DeleteGallery?id=@item.Id">
+                                            delete
+                                        </a>
+                                    </div>
                             }
                         }
-                    </div>
+                        </div>
                 }
             </div>
             <div class="form-group">
@@ -94,7 +94,7 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
+@* @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
@@ -102,7 +102,10 @@
     <script>
         function deleteGallery(id) {
             $.ajax({
-                url: '/admin/products/DeleteGallery?id=' + id,
+                url: '/admin/products/DeleteGallery,
+                data: {
+                    id=id
+                }
                 type: 'GET',
                 success: function (response) {
                     $("#" + id).slideUp();
@@ -114,3 +117,4 @@
         }
     </script>
 }
+ *@

@@ -42,7 +42,8 @@ namespace Ecommerce.Areas.Admin.Controllers
             }
             _context.Remove(gallery);
             _context.SaveChanges();
-            return Ok();
+
+            return RedirectToAction("Edit", new { id = gallery.ProductId });
         }
 
         // GET: Admin/Products/Details/5
