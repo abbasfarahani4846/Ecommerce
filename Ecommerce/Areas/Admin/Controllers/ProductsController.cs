@@ -43,7 +43,8 @@ namespace Ecommerce.Areas.Admin.Controllers
             _context.Remove(gallery);
             _context.SaveChanges();
 
-            return RedirectToAction("Edit", new { id = gallery.ProductId });
+
+            return Redirect("edit/" + gallery.ProductId);
         }
 
         // GET: Admin/Products/Details/5
