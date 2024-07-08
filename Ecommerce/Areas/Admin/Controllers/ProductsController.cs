@@ -33,12 +33,12 @@ namespace Ecommerce.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+            string d = Directory.GetCurrentDirectory();
+            string path = d + "\\wwwroot\\images\\products\\" + gallery.ImageName;
 
-            if (System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                  gallery.ImageName)))
+            if (System.IO.File.Exists(path))
             {
-                System.IO.File.Delete(Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                         gallery.ImageName));
+                System.IO.File.Delete(path);
             }
             _context.Remove(gallery);
             _context.SaveChanges();
