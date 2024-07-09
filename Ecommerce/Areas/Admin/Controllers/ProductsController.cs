@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Ecommerce.Models.db;
 using System.Reflection;
+using Microsoft.CodeAnalysis;
 
 namespace Ecommerce.Areas.Admin.Controllers
 {
@@ -33,9 +34,10 @@ namespace Ecommerce.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+            //------------------------------------------------
             string d = Directory.GetCurrentDirectory();
             string path = d + "\\wwwroot\\images\\products\\" + gallery.ImageName;
-
+            //------------------------------------------------
             if (System.IO.File.Exists(path))
             {
                 System.IO.File.Delete(path);
@@ -83,17 +85,18 @@ namespace Ecommerce.Areas.Admin.Controllers
                 if (image != null)
                 {
                     product.ImageName = Guid.NewGuid() + Path.GetExtension(image.FileName);
+                    //------------------------------------------------
+                    string d = Directory.GetCurrentDirectory();
+                    string fn = d + "\\wwwroot\\images\\products\\" + product.ImageName;
+                    //------------------------------------------------
 
-                    //ذخیره تصویر اصلی
-                    string ImagePath = Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                    product.ImageName);
-                    using (var stream = new FileStream(ImagePath, FileMode.Create))
+                    using (var stream = new FileStream(fn, FileMode.Create))
                     {
                         image.CopyTo(stream);
                     }
 
                 }
-
+                //------------------------------------------------
                 _context.Add(product);
                 await _context.SaveChangesAsync();
 
@@ -103,24 +106,21 @@ namespace Ecommerce.Areas.Admin.Controllers
                     {
                         var newGallery = new ProductGalery();
                         newGallery.ProductId = product.Id;
-
                         newGallery.ImageName = Guid.NewGuid() + Path.GetExtension(item.FileName);
-
-                        //ذخیره تصویر اصلی
-                        string ImagePath = Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                        newGallery.ImageName);
-                        using (var stream = new FileStream(ImagePath, FileMode.Create))
+                        //------------------------------------------------
+                        string d = Directory.GetCurrentDirectory();
+                        string fn = d + "\\wwwroot\\images\\products\\" + newGallery.ImageName;
+                        //------------------------------------------------
+                        using (var stream = new FileStream(fn, FileMode.Create))
                         {
                             item.CopyTo(stream);
                         }
-
-
+                        //------------------------------------------------
                         _context.ProductGaleries.Add(newGallery);
                     }
                 }
-
+                //------------------------------------------------
                 await _context.SaveChangesAsync();
-
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -162,19 +162,16 @@ namespace Ecommerce.Areas.Admin.Controllers
                 {
                     if (image != null)
                     {
-                        if (System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                   product.ImageName)))
+
+                        string d = Directory.GetCurrentDirectory();
+                        string fn = d + "\\wwwroot\\images\\products\\" + product.ImageName;
+                        //------------------------------------------------
+                        if (System.IO.File.Exists(fn))
                         {
-                            System.IO.File.Delete(Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                     product.ImageName));
+                            System.IO.File.Delete(fn);
                         }
-
-                        product.ImageName = Guid.NewGuid() + Path.GetExtension(image.FileName);
-
-                        //ذخیره تصویر اصلی
-                        string ImagePath = Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                        product.ImageName);
-                        using (var stream = new FileStream(ImagePath, FileMode.Create))
+                        //------------------------------------------------
+                        using (var stream = new FileStream(fn, FileMode.Create))
                         {
                             image.CopyTo(stream);
                         }
@@ -187,24 +184,25 @@ namespace Ecommerce.Areas.Admin.Controllers
                         foreach (var item in gallery)
                         {
 
-                            var imgName = Guid.NewGuid() + Path.GetExtension(item.FileName);
+                            var imageName = Guid.NewGuid() + Path.GetExtension(item.FileName);
+                            //------------------------------------------------
+                            string d = Directory.GetCurrentDirectory();
+                            string fn = d + "\\wwwroot\\images\\products\\" + imageName;
+                            //------------------------------------------------
 
-                            //ذخیره تصویر اصلی
-                            string ImagePath = Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                            imgName);
-                            using (var stream = new FileStream(ImagePath, FileMode.Create))
+                            using (var stream = new FileStream(fn, FileMode.Create))
                             {
                                 item.CopyTo(stream);
                             }
+                            //------------------------------------------------
+                            var galleryItem = new ProductGalery();
+                            galleryItem.ImageName = imageName;
+                            galleryItem.ProductId = product.Id;
 
-                            _context.ProductGaleries.Add(new ProductGalery
-                            {
-                                ImageName = imgName,
-                                ProductId = product.Id
-                            });
+                            _context.ProductGaleries.Add(galleryItem);
                         }
                     }
-
+                    //------------------------------------------------
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
@@ -250,11 +248,14 @@ namespace Ecommerce.Areas.Admin.Controllers
             var product = await _context.Products.FindAsync(id);
             if (product != null)
             {
-                if (System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                product.ImageName)))
+                string d = Directory.GetCurrentDirectory();
+                string fn = d + "\\wwwroot\\images\\products\\";
+
+                string mainImagePath = fn + product.ImageName;
+
+                if (System.IO.File.Exists(fn))
                 {
-                    System.IO.File.Delete(Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                             product.ImageName));
+                    System.IO.File.Delete(fn);
                 }
 
                 var galleries = _context.ProductGaleries.Where(x => x.ProductId == id).ToList();
@@ -262,11 +263,11 @@ namespace Ecommerce.Areas.Admin.Controllers
                 {
                     foreach (var item in galleries)
                     {
-                        if (System.IO.File.Exists(Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                               item.ImageName)))
+                        string galleryImagePath = fn + item.ImageName;
+
+                        if (System.IO.File.Exists(galleryImagePath))
                         {
-                            System.IO.File.Delete(Path.Combine(Directory.GetCurrentDirectory() + "/wwwroot/images/products/" +
-                                                     item.ImageName));
+                            System.IO.File.Delete(galleryImagePath);
                         }
                     }
 
