@@ -1,0 +1,148 @@
+﻿@model List<Ecommerce.Models.db.Product>
+
+<!--shop  area start-->
+<div class="shop_section shop_reverse">
+    <div class="container">
+        <div class="row">
+           
+            <div class="col-lg-12 col-md-12">
+                <!--shop wrapper start-->
+                <!--breadcrumbs area start-->
+                <div class="breadcrumb_content">
+                    <ul>
+                        <li><a href="index.html">home</a></li>
+                        <li>shop</li>
+                    </ul>
+                </div>
+                <!--breadcrumbs area end-->
+
+                <div class="shop_banner d-flex align-items-center" data-bgimg="assets/img/bg/shop_bg.jpg">
+                    <div class="shop_banner_text">
+                        <h2>essential <br> wears</h2>
+                        <p>The collections basic items <br> essential for all girls</p>
+                    </div>
+                </div>
+                <!--shop toolbar start-->
+                <div class="shop_toolbar_wrapper d-flex justify-content-between align-items-center">
+                    <div class="page_amount">
+                        <p><span>
+                            @Model.Count
+                        </span> Products Found</p>
+                    </div>
+                  
+                    <div class="toolbar_btn_wrapper d-flex align-items-center">
+                        <div class="view_btn">
+                            <a class="view" href="#">VIEW</a>
+                        </div>
+                        <div class="shop_toolbar_btn">
+                            <ul class="d-flex align-items-center">
+                                <li><a href="#" class="active btn-grid-3" data-role="grid_3" data-tippy="3" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top"><i class="ion-grid"></i></a></li>
+
+                                <li><a href="#" class="btn-list" data-role="grid_list" data-tippy="List" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top"><i class="ion-navicon"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!--shop toolbar end-->
+                <div class="row shop_wrapper">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-6 ">
+                            <div class="single_product">
+                                <div class="product_thumb">
+                                    <a href="/product/singleproduct?productid=@item.Id">
+                                        <img class="primary_img" src="/images/products/@item.ImageName" alt="@item.Title">
+                                    </a>
+
+                                    @if (item.Discount != null)
+                                    {
+                                        <div class="product_label">
+                                            @{
+                                                double? originalPrice = double.Parse(item.Price.ToString());
+
+                                                double? discountAmount = double.Parse(item.Discount.ToString());
+
+                                                double discountPercentage = (discountAmount.Value / originalPrice.Value) * 100;
+                                            <span>
+                                                    %@discountPercentage.ToString("F0")
+                                            </span>
+                                            }
+
+                                        </div>
+                                    }
+                                </div>
+                                <div class="product_content grid_content text-center">
+
+                                    <h4 class="product_name">
+                                        <a href="product-details.html">
+                                            @item.Title
+                                        </a>
+                                    </h4>
+                                    <div class="price_box">
+                                        @if (item.Discount != null)
+                                        {
+                                            <span class="current_price">$@(item.Price - item.Discount)</span>
+                                            <span class="old_price">$@item.Price</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="current_price">$@item.Price</span>
+                                        }
+
+                                    </div>
+                                    <div class="add_to_cart">
+                                        <a class="btn btn-primary" href="#" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
+                                    </div>
+                                </div>
+                                <div class="product_list_content">
+                                    <h4 class="product_name">
+                                        <a href="product-details.html">
+                                            @item.Title
+                                        </a>
+                                    </h4>
+
+                                    <div class="price_box">
+                                        @if (item.Discount != null)
+                                        {
+                                            <span class="current_price">$@item.Discount</span>
+                                            <span class="old_price">$@item.Price</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="current_price">$@item.Price</span>
+                                        }
+                                    </div>
+                                    <div class="product_desc">
+                                        <p>
+                                            @item.Description
+                                        </p>
+                                    </div>
+                                    <div class="add_to_cart">
+                                        <a class="btn btn-primary" href="#" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                </div>
+                <div class="pagination_style pagination justify-content-center">
+                    <ul class="d-flex">
+                        <li><a href="#"> << </a></li>
+                        <li><a href="#">1</a></li>
+                        <li><a class="current" href="#">2</a></li>
+                        <li><a href="#">3</a></li>
+                        <li><a href="#">4</a></li>
+                        <li><a href="#">5</a></li>
+                        <li><a href="#">>></a></li>
+                    </ul>
+                </div>
+
+                <!--shop toolbar end-->
+                <!--shop wrapper end-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--shop  area end-->

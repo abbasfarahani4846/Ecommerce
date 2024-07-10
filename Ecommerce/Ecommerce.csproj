@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Controllers\" />
     <Folder Include="Data\" />
     <Folder Include="Models\Db\" />
     <Folder Include="Models\ViewModels\" />
