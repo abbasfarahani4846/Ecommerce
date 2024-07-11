@@ -3,25 +3,19 @@
 <!--shop  area start-->
 <div class="shop_section shop_reverse">
     <div class="container">
-        <div class="row">
+        <div class="row mt-5">
            
             <div class="col-lg-12 col-md-12">
                 <!--shop wrapper start-->
                 <!--breadcrumbs area start-->
                 <div class="breadcrumb_content">
                     <ul>
-                        <li><a href="index.html">home</a></li>
+                        <li><a href="/">home</a></li>
                         <li>shop</li>
                     </ul>
                 </div>
                 <!--breadcrumbs area end-->
 
-                <div class="shop_banner d-flex align-items-center" data-bgimg="assets/img/bg/shop_bg.jpg">
-                    <div class="shop_banner_text">
-                        <h2>essential <br> wears</h2>
-                        <p>The collections basic items <br> essential for all girls</p>
-                    </div>
-                </div>
                 <!--shop toolbar start-->
                 <div class="shop_toolbar_wrapper d-flex justify-content-between align-items-center">
                     <div class="page_amount">
@@ -47,7 +41,7 @@
                 <div class="row shop_wrapper">
                     @foreach (var item in Model)
                     {
-                        <div class="col-lg-3 col-md-3 col-sm-6 col-6 ">
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-6">
                             <div class="single_product">
                                 <div class="product_thumb">
                                     <a href="/product/singleproduct?productid=@item.Id">
@@ -127,17 +121,7 @@
 
                     }
                 </div>
-                <div class="pagination_style pagination justify-content-center">
-                    <ul class="d-flex">
-                        <li><a href="#"> << </a></li>
-                        <li><a href="#">1</a></li>
-                        <li><a class="current" href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li><a href="#">5</a></li>
-                        <li><a href="#">>></a></li>
-                    </ul>
-                </div>
+           
 
                 <!--shop toolbar end-->
                 <!--shop wrapper end-->
