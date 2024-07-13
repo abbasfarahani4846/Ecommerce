@@ -75,11 +75,13 @@
                                     {
                                         <div class="product_label">
                                             @{
-                                                double? originalPrice = double.Parse(item.Price.ToString());
+                                                // double? originalPrice = double.Parse(item.Price.ToString());
 
-                                                double? discountAmount = double.Parse(item.Discount.ToString());
+                                                // double? discountAmount = double.Parse(item.Discount.ToString());
 
-                                                double discountPercentage = (discountAmount.Value / originalPrice.Value) * 100;
+                                                // // double discountPercentage = (discountAmount.Value / originalPrice.Value) * 100;
+
+                                                var discountPercentage = ((double)item.Discount / (double)item.Price) * 100;
                                                 <span>
                                                     %@discountPercentage.ToString("F0")
                                                 </span>
