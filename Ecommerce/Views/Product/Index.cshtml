@@ -121,7 +121,7 @@
                                     <div class="price_box">
                                         @if (item.Discount != null)
                                         {
-                                            <span class="current_price">$@item.Discount</span>
+                                            <span class="current_price">$@(item.Price-item.Discount)</span>
                                             <span class="old_price">$@item.Price</span>
                                         }
                                         else
