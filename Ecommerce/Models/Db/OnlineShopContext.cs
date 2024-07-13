@@ -49,6 +49,7 @@ public partial class OnlineShopContext : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
+            entity.Property(e => e.Category).HasMaxLength(100);
             entity.Property(e => e.ImageName).HasMaxLength(50);
             entity.Property(e => e.Title)
                 .HasMaxLength(500)

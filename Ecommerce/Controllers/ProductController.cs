@@ -1,6 +1,7 @@
 ﻿using Ecommerce.Models.db;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Controllers
 {
@@ -13,9 +14,30 @@ namespace Ecommerce.Controllers
         }
         public IActionResult Index()
         {
-            List<Product> products = _context.Products.OrderByDescending(x => x.Id).ToList();
+            var products = _context.Products.OrderByDescending(x => x.Id).ToList();
+
             return View(products);
         }
+        public IActionResult ProductsByCategory(string? category)
+        {
+            var products = _context.Products
+                .Where(x => x.Category == category)
+                .OrderByDescending(x => x.Id)
+                .ToList();
+
+            return View("Index", products);
+        }
+        //public IActionResult Index(string? category)
+        //{
+        //    var products = _context.Products.OrderByDescending(x => x.Id).AsQueryable();
+
+        //    if (!string.IsNullOrEmpty(category))
+        //    {
+        //        products = products.Where(x => x.Category.Contains(category));
+        //    }
+
+        //    return View(products.ToList());
+        //}
         //public IActionResult SingleProduct(int productId)
         //{
         //    Product product = _context.Products.FirstOrDefault(product => product.Id == productId);

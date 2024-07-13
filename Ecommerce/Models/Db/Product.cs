@@ -22,4 +22,6 @@ public partial class Product
     public int? Qty { get; set; }
 
     public string? Tags { get; set; }
+
+    public string? Category { get; set; }
 }

@@ -4,8 +4,30 @@
 <div class="shop_section shop_reverse">
     <div class="container">
         <div class="row mt-5">
-           
-            <div class="col-lg-12 col-md-12">
+            <div class="col-lg-3 col-md-12">
+                <!--sidebar widget start-->
+                <aside class="sidebar_widget">
+                    <div class="widget_inner">
+                        <div class="widget_list widget_categories">
+                            <h2>Categories</h2>
+                            <ul>
+                                <li class="widget_sub_categories">
+                                    <ul class="widget_dropdown_categories collapse show" id="men">
+                                        <li><a href="/product"> All </a></li>
+                                        <li><a href="/product/ProductsByCategory?category=bags"> Bags </a></li>
+                                        <li><a href="/product/ProductsByCategory?category=shirt">Shirt</a></li>
+
+                                    </ul>
+                                </li>
+
+                            </ul>
+                        </div>
+
+                    </div>
+                </aside>
+                <!--sidebar widget end-->
+            </div>
+            <div class="col-lg-9 col-md-12">
                 <!--shop wrapper start-->
                 <!--breadcrumbs area start-->
                 <div class="breadcrumb_content">
@@ -15,15 +37,16 @@
                     </ul>
                 </div>
                 <!--breadcrumbs area end-->
-
                 <!--shop toolbar start-->
                 <div class="shop_toolbar_wrapper d-flex justify-content-between align-items-center">
                     <div class="page_amount">
-                        <p><span>
-                            @Model.Count
-                        </span> Products Found</p>
+                        <p>
+                            <span>
+                                @Model.Count
+                            </span> Products Found
+                        </p>
                     </div>
-                  
+
                     <div class="toolbar_btn_wrapper d-flex align-items-center">
                         <div class="view_btn">
                             <a class="view" href="#">VIEW</a>
@@ -57,9 +80,9 @@
                                                 double? discountAmount = double.Parse(item.Discount.ToString());
 
                                                 double discountPercentage = (discountAmount.Value / originalPrice.Value) * 100;
-                                            <span>
+                                                <span>
                                                     %@discountPercentage.ToString("F0")
-                                            </span>
+                                                </span>
                                             }
 
                                         </div>
@@ -121,7 +144,7 @@
 
                     }
                 </div>
-           
+
 
                 <!--shop toolbar end-->
                 <!--shop wrapper end-->

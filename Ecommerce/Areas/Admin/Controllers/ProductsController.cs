@@ -78,7 +78,7 @@ namespace Ecommerce.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Text,Price,Discount,ImageName,Qty,Tags")] Product product, IFormFile? image, IFormFile[]? gallery)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,Text,Price,Discount,ImageName,Qty,Tags,Category")] Product product, IFormFile? image, IFormFile[]? gallery)
         {
             if (ModelState.IsValid)
             {
@@ -149,7 +149,7 @@ namespace Ecommerce.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Text,Price,Discount,ImageName,Qty,Tags")] Product product, IFormFile? image, IFormFile[]? gallery)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Text,Price,Discount,ImageName,Qty,Tags,Category")] Product product, IFormFile? image, IFormFile[]? gallery)
         {
             if (id != product.Id)
             {
