@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Models.db;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,31 @@ namespace Ecommerce.Controllers
 
             return View("Index", products);
         }
+        public IActionResult ProductDetails(int id)
+        {
+            Product product = _context.Products.FirstOrDefault(x => x.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["gallery"] = _context.ProductGaleries.Where(x => x.ProductId == id).ToList();
+            //if (!string.IsNullOrEmpty(product.Tags))
+            //{
+            //    var tags = product.Tags.Split(',')
+            //                .Select(tag => tag.Trim())
+            //                .ToList();
+
+            //    var relatedProducts = _context.Products
+            //        .Where(x => x.Id != id && x.Tags != null && tags.Any(tag => x.Tags.Contains(tag)))
+            //        .ToList();
+
+            //    ViewData["relatedProducts"] = relatedProducts;
+            //}
+            return View(product);
+        }
+
         // public IActionResult ProductsByCategory(string? category)
         // {
         //     var products = _context.Products
@@ -52,17 +78,6 @@ namespace Ecommerce.Controllers
 
         //    return View(products.ToList());
         //}
-        //public IActionResult SingleProduct(int productId)
-        //{
-        //    Product product = _context.Products.FirstOrDefault(product => product.Id == productId);
 
-        //    if (product == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    ViewData["gallery"] = _context.ProductGaleries.Where(x => x.ProductId == productId).ToList();
-        //    return View(product);
-        //}
     }
 }
