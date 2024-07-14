@@ -1,5 +1,4 @@
 ﻿using Ecommerce.Models.db;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,25 +7,40 @@ namespace Ecommerce.Controllers
     public class ProductController : Controller
     {
         private readonly OnlineShopContext _context;
+
         public ProductController(OnlineShopContext context)
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
             var products = _context.Products.OrderByDescending(x => x.Id).ToList();
 
             return View(products);
         }
-        public IActionResult ProductsByCategory(string? category)
+
+        public IActionResult SearchProducts(string searchText)
         {
             var products = _context.Products
-                .Where(x => x.Category == category)
-                .OrderByDescending(x => x.Id)
+                .Where(x =>
+                    EF.Functions.Like(x.Title, "%" + searchText + "%") ||
+                    EF.Functions.Like(x.Tags, "%" + searchText + "%")
+                )
+                .OrderBy(x => x.Title)
                 .ToList();
 
             return View("Index", products);
         }
+        // public IActionResult ProductsByCategory(string? category)
+        // {
+        //     var products = _context.Products
+        //         .Where(x => x.Category == category)
+        //         .OrderByDescending(x => x.Id)
+        //         .ToList();
+        //
+        //     return View("Index", products);
+        // }
         //public IActionResult Index(string? category)
         //{
         //    var products = _context.Products.OrderByDescending(x => x.Id).AsQueryable();
