@@ -40,7 +40,9 @@
                 <div class="product_zoom_gallery">
                     <div class="zoom_gallery_inner d-flex">
                         <div class="zoom_tab_img">
-                        
+                            <a class="zoom_tabimg_list" href="javascript:void(0)">
+                                <img src="/images/products/@Model.ImageName" alt="@Model.ImageName">
+                            </a>
                             @if (gallery.Any())
                             {
                                 @foreach (var item in gallery.OrderBy(x => x.Id))
@@ -53,7 +55,9 @@
 
                         </div>
                         <div class="product_zoom_main_img">
-                           
+                            <div class="product_zoom_thumb">
+                                <img data-image="/images/products/@Model.ImageName" src="/images/products/@Model.ImageName" alt="@Model.ImageName" />
+                            </div>
                             @if (gallery.Any())
                             {
                                 @foreach (var item in gallery.OrderBy(x => x.Id))
@@ -296,20 +300,20 @@
             </div>
             <div class="product_container row">
                 <div class=" product_slick slick_slider_activation" data-slick='{
-                        "slidesToShow": 4,
-                        "slidesToScroll": 1,
-                        "arrows": true,
-                        "dots": false,
-                        "autoplay": false,
-                        "speed": 300,
-                        "infinite": true,
-                        "responsive":[
-                          {"breakpoint":992, "settings": { "slidesToShow": 3 } },
-                          {"breakpoint":768, "settings": { "slidesToShow": 2 } },
-                          {"breakpoint":300, "settings": { "slidesToShow": 1 } }
-                         ]
-                    }'>
-             
+                            "slidesToShow": 4,
+                            "slidesToScroll": 1,
+                            "arrows": true,
+                            "dots": false,
+                            "autoplay": false,
+                            "speed": 300,
+                            "infinite": true,
+                            "responsive":[
+                              {"breakpoint":992, "settings": { "slidesToShow": 3 } },
+                              {"breakpoint":768, "settings": { "slidesToShow": 2 } },
+                              {"breakpoint":300, "settings": { "slidesToShow": 1 } }
+                             ]
+                        }'>
+
                     <div class="col-lg-3">
                         <div class="single_product">
                             <div class="product_thumb">
