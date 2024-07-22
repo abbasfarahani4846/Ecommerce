@@ -1,11 +1,11 @@
 ﻿@model Product
 @{
     List<ProductGalery> gallery = new List<ProductGalery>();
-    List<Product> relatedProducts = new List<Product>();
+    List<Product> newProducts = new List<Product>();
 
-    if (ViewData["relatedProducts"] != null)
+    if (ViewData["newProducts"] != null)
     {
-        relatedProducts = ViewData["relatedProducts"] as List<Product>;
+        newProducts = ViewData["newProducts"] as List<Product>;
     }
     if (ViewData["gallery"] != null)
     {
@@ -43,6 +43,7 @@
                             <a class="zoom_tabimg_list" href="javascript:void(0)">
                                 <img src="/images/products/@Model.ImageName" alt="@Model.ImageName">
                             </a>
+
                             @if (gallery.Any())
                             {
                                 @foreach (var item in gallery.OrderBy(x => x.Id))
@@ -58,6 +59,7 @@
                             <div class="product_zoom_thumb">
                                 <img data-image="/images/products/@Model.ImageName" src="/images/products/@Model.ImageName" alt="@Model.ImageName" />
                             </div>
+
                             @if (gallery.Any())
                             {
                                 @foreach (var item in gallery.OrderBy(x => x.Id))
@@ -287,113 +289,118 @@
 </div>
 <!--product info end-->
 <!--product area start-->
-@if (relatedProducts.Any())
+@if (newProducts.Any())
 {
     <section class="product_area related_products mb-118">
         <div class="container">
             <div class="row">
                 <div class="col-12">
                     <div class="section_title mb-50">
-                        <h2>Related Products</h2>
+                        <h2>New Products</h2>
                     </div>
                 </div>
             </div>
             <div class="product_container row">
                 <div class=" product_slick slick_slider_activation" data-slick='{
-                            "slidesToShow": 4,
-                            "slidesToScroll": 1,
-                            "arrows": true,
-                            "dots": false,
-                            "autoplay": false,
-                            "speed": 300,
-                            "infinite": true,
-                            "responsive":[
-                              {"breakpoint":992, "settings": { "slidesToShow": 3 } },
-                              {"breakpoint":768, "settings": { "slidesToShow": 2 } },
-                              {"breakpoint":300, "settings": { "slidesToShow": 1 } }
-                             ]
-                        }'>
+                                                    "slidesToShow": 4,
+                                                    "slidesToScroll": 1,
+                                                    "arrows": true,
+                                                    "dots": false,
+                                                    "autoplay": false,
+                                                    "speed": 300,
+                                                    "infinite": true,
+                                                    "responsive":[
+                                                      {"breakpoint":992, "settings": { "slidesToShow": 3 } },
+                                                      {"breakpoint":768, "settings": { "slidesToShow": 2 } },
+                                                      {"breakpoint":300, "settings": { "slidesToShow": 1 } }
+                                                     ]
+                                                }'>
 
-                    <div class="col-lg-3">
-                        <div class="single_product">
-                            <div class="product_thumb">
-                                <a href="/product/productdetails/@Model.Id">
-                                    <img class="primary_img" src="/images/products/@Model.ImageName" alt="@Model.Title">
-                                </a>
+                    @foreach (var item in newProducts)
+                    {
 
-                                @if (Model.Discount != null)
-                                {
-                                    <div class="product_label">
-                                        @{
-                                            // double? originalPrice = double.Parse(item.Price.ToString());
+                        <div class="col-lg-3">
+                            <div class="single_product">
+                                <div class="product_thumb">
+                                    <a href="/product/productdetails/@item.Id">
+                                        <img class="primary_img" src="/images/products/@item.ImageName" alt="@item.Title">
+                                    </a>
 
-                                            // double? discountAmount = double.Parse(item.Discount.ToString());
+                                    @if (item.Discount != null)
+                                    {
+                                        <div class="product_label">
+                                            @{
+                                                // double? originalPrice = double.Parse(item.Price.ToString());
 
-                                            // // double discountPercentage = (discountAmount.Value / originalPrice.Value) * 100;
+                                                // double? discountAmount = double.Parse(item.Discount.ToString());
 
-                                            var discountPercentage = ((double)Model.Discount / (double)Model.Price) * 100;
-                                            <span>
-                                                %@discountPercentage.ToString("F0")
-                                            </span>
+                                                // // double discountPercentage = (discountAmount.Value / originalPrice.Value) * 100;
+
+                                                var discountPercentage = ((double)item.Discount / (double)item.Price) * 100;
+                                                <span>
+                                                    %@discountPercentage.ToString("F0")
+                                                </span>
+                                            }
+
+                                        </div>
+                                    }
+                                </div>
+                                <div class="product_content grid_content text-center">
+
+                                    <h4 class="product_name">
+                                        <a href="product-details.html">
+                                            @item.Title
+                                        </a>
+                                    </h4>
+                                    <div class="price_box">
+                                        @if (item.Discount != null)
+                                        {
+                                            <span class="current_price">$@(item.Price - item.Discount)</span>
+                                            <span class="old_price">$@item.Price</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="current_price">$@item.Price</span>
                                         }
 
                                     </div>
-                                }
-                            </div>
-                            <div class="product_content grid_content text-center">
-
-                                <h4 class="product_name">
-                                    <a href="product-details.html">
-                                        @Model.Title
-                                    </a>
-                                </h4>
-                                <div class="price_box">
-                                    @if (Model.Discount != null)
-                                    {
-                                        <span class="current_price">$@(Model.Price - Model.Discount)</span>
-                                        <span class="old_price">$@Model.Price</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="current_price">$@Model.Price</span>
-                                    }
-
+                                    <div class="add_to_cart">
+                                        <a class="btn btn-primary" href="#" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
+                                    </div>
                                 </div>
-                                <div class="add_to_cart">
-                                    <a class="btn btn-primary" href="#" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
-                                </div>
-                            </div>
-                            <div class="product_list_content">
-                                <h4 class="product_name">
-                                    <a href="product-details.html">
-                                        @Model.Title
-                                    </a>
-                                </h4>
+                                <div class="product_list_content">
+                                    <h4 class="product_name">
+                                        <a href="product-details.html">
+                                            @item.Title
+                                        </a>
+                                    </h4>
 
-                                <div class="price_box">
-                                    @if (Model.Discount != null)
-                                    {
-                                        <span class="current_price">$@(Model.Price - Model.Discount)</span>
-                                        <span class="old_price">$@Model.Price</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="current_price">$@Model.Price</span>
-                                    }
-                                </div>
-                                <div class="product_desc">
-                                    <p>
-                                        @Model.Description
-                                    </p>
-                                </div>
-                                <div class="add_to_cart">
-                                    <a class="btn btn-primary" href="#" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
+                                    <div class="price_box">
+                                        @if (item.Discount != null)
+                                        {
+                                            <span class="current_price">$@(item.Price - item.Discount)</span>
+                                            <span class="old_price">$@item.Price</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="current_price">$@item.Price</span>
+                                        }
+                                    </div>
+                                    <div class="product_desc">
+                                        <p>
+                                            @item.Description
+                                        </p>
+                                    </div>
+                                    <div class="add_to_cart">
+                                        <a class="btn btn-primary" href="#" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
 
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+
+                    }
                 </div>
             </div>
         </div>

@@ -43,18 +43,8 @@ namespace Ecommerce.Controllers
             }
 
             ViewData["gallery"] = _context.ProductGaleries.Where(x => x.ProductId == id).ToList();
-            //if (!string.IsNullOrEmpty(product.Tags))
-            //{
-            //    var tags = product.Tags.Split(',')
-            //                .Select(tag => tag.Trim())
-            //                .ToList();
 
-            //    var relatedProducts = _context.Products
-            //        .Where(x => x.Id != id && x.Tags != null && tags.Any(tag => x.Tags.Contains(tag)))
-            //        .ToList();
-
-            //    ViewData["relatedProducts"] = relatedProducts;
-            //}
+            ViewData["newProducts"] = _context.Products.Where(x => x.Id != id).Take(6).OrderByDescending(x=>x.Id).ToList();
             return View(product);
         }
 
