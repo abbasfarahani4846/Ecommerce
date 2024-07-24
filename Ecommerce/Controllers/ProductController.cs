@@ -61,7 +61,7 @@ namespace Ecommerce.Controllers
                 if (!match.Success)
                 {
                     TempData["ErrorMessage"] = "Email is not valid";
-                    return RedirectToAction("ProductDetails", new { id = productId });
+                    return Redirect("/Products/ProductDetails/" + productId);
                 }
 
                 Comment newComment = new Comment();
@@ -75,11 +75,14 @@ namespace Ecommerce.Controllers
                 _context.SaveChanges();
 
                 TempData["SuccessMessage"] = "Youre comment submited success fully";
-                return RedirectToAction("ProductDetails", new { id = productId });
+                return Redirect("/Products/ProductDetails/" + productId);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Please complete youre information";
+                return Redirect("/Products/ProductDetails/" + productId);
             }
 
-            TempData["ErrorMessage"] = "Please complete youre information";
-            return RedirectToAction("ProductDetails", new { id = productId });
         }
 
         // public IActionResult ProductsByCategory(string? category)
