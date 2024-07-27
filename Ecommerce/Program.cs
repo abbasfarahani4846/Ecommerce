@@ -1,5 +1,6 @@
 using Ecommerce.Models.db;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<OnlineShopContext>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+            options.LoginPath = "/Account/Login";
+            options.LogoutPath = "/Account/logout";
+        });
 
 var app = builder.Build();
 
@@ -24,7 +32,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication(); // Added for authentication
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "Admin",
