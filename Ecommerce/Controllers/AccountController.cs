@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Ecommerce.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ecommerce.Controllers
 {
@@ -18,6 +19,47 @@ namespace Ecommerce.Controllers
         public AccountController(OnlineShopContext context)
         {
             _context = context;
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Register(User user)
+        {
+            user.RegisterDate = DateTime.Now;
+            user.IsAdmin = false;
+            user.Email = user.Email.Trim();
+            user.Password = user.Password.Trim();
+            user.FullName = user.FullName.Trim();
+            user.RecoveryCode = 0;
+
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
+
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(user.Email);
+            if (!match.Success)
+            {
+                ModelState.AddModelError("Email", "Email is not valid");
+                return View(user);
+            }
+
+            var prevUser = _context.Users.Any(x => x.Email == user.Email);
+            if (prevUser)
+            {
+                ModelState.AddModelError("Email", "Email is used");
+                return View(user);
+            }
+
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            return RedirectToAction("login");
         }
         public IActionResult Login()
         {
@@ -58,47 +100,7 @@ namespace Ecommerce.Controllers
             return Redirect("/");
         }
 
-        public IActionResult Register()
-        {
-            return View();
-        }
-        [HttpPost]
-        public IActionResult Register(User user)
-        {
-            user.RegisterDate = DateTime.Now;
-            user.IsAdmin = false;
-            user.Email = user.Email.Trim();
-            user.Password = user.Password.Trim();
-            user.FullName = user.FullName.Trim();
-            user.RecoveryCode = new Random().Next(10000, 100000);
-
-            if (!ModelState.IsValid)
-            {
-                return View(user);
-            }
-
-            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-            Match match = regex.Match(user.Email);
-            if (!match.Success)
-            {
-                ModelState.AddModelError("Email", "Email is not valid");
-                return View(user);
-            }
-
-            var prevUser = _context.Users.Any(x => x.Email == user.Email);
-            if (prevUser)
-            {
-                ModelState.AddModelError("Email", "Email is used");
-                return View(user);
-            }
-
-
-            _context.Users.Add(user);
-            _context.SaveChanges();
-
-            return RedirectToAction("login");
-        }
-
+        [Authorize]
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
