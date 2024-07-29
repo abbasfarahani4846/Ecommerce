@@ -28,13 +28,6 @@ namespace Ecommerce.Controllers
         [HttpPost]
         public IActionResult Register(User user)
         {
-            user.RegisterDate = DateTime.Now;
-            user.IsAdmin = false;
-            user.Email = user.Email.Trim();
-            user.Password = user.Password.Trim();
-            user.FullName = user.FullName.Trim();
-            user.RecoveryCode = 0;
-
             if (!ModelState.IsValid)
             {
                 return View(user);
@@ -48,6 +41,7 @@ namespace Ecommerce.Controllers
                 return View(user);
             }
 
+            user.Email = user.Email.Trim();
             var prevUser = _context.Users.Any(x => x.Email == user.Email);
             if (prevUser)
             {
@@ -55,6 +49,11 @@ namespace Ecommerce.Controllers
                 return View(user);
             }
 
+            user.RegisterDate = DateTime.Now;
+            user.IsAdmin = false;
+            user.Password = user.Password.Trim();
+            user.FullName = user.FullName.Trim();
+            user.RecoveryCode = 0;
 
             _context.Users.Add(user);
             _context.SaveChanges();
