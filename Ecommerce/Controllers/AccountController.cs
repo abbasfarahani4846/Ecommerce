@@ -11,6 +11,9 @@ using System.Text.RegularExpressions;
 using Ecommerce.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
+using System.Net.Mail;
+using System.Net;
+
 namespace Ecommerce.Controllers
 {
     public class AccountController : Controller
@@ -104,6 +107,96 @@ namespace Ecommerce.Controllers
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
+        }
+
+        public IActionResult RecoveryPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult RecoveryPassword(RecoveryPasswordViewModel recoveryPassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(recoveryPassword.Email);
+            if (!match.Success)
+            {
+                ModelState.AddModelError("Email", "Email is not valid");
+                return View(recoveryPassword);
+            }
+
+            var findUser = _context.Users.FirstOrDefault(x => x.Email == recoveryPassword.Email.Trim());
+            if (findUser == null)
+            {
+                ModelState.AddModelError("Email", "Email is not exist");
+                return View(recoveryPassword);
+            }
+
+            findUser.RecoveryCode = new Random().Next(10000, 100000);
+            _context.Users.Update(findUser);
+            _context.SaveChanges();
+
+            // Set up the email details
+            string to = recoveryPassword.Email; // To address
+            string from = "emailsendertest0055@gmail.com"; // From address
+            string fromPass = "fflf cwva cbmn bpgb";
+            string subject = "Recovery code";
+            string body = "youre recovery code:" + findUser.RecoveryCode;
+
+            // Create a new MailMessage object
+            MailMessage mail = new MailMessage(from, to, subject, body);
+
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(from, fromPass)
+            };
+
+            using (var message = new MailMessage(from, to)
+            {
+                Subject = subject,
+                Body = body
+            }
+            )
+            {
+                smtp.Send(message);
+            }
+
+            var ressetPasswordModel = new RessetPasswordViewModel();
+            ressetPasswordModel.Email = findUser.Email;
+
+            return View("RessetPassword", ressetPasswordModel);
+        }
+      
+        [HttpPost]
+        public IActionResult RessetPassword(RessetPasswordViewModel ressetPassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(ressetPassword);
+            }
+
+            var findUser = _context.Users.FirstOrDefault(x => x.Email == ressetPassword.Email && x.RecoveryCode == ressetPassword.RecoveryCode);
+            if (findUser == null)
+            {
+                ModelState.AddModelError("Email", "Email is not exist");
+                return View(ressetPassword);
+            }
+
+            findUser.Password = ressetPassword.NewPassword;
+
+            _context.Users.Update(findUser);
+            _context.SaveChanges();
+
+            return RedirectToAction("Login");
         }
     }
 }
