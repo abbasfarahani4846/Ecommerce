@@ -11,8 +11,5 @@ namespace Ecommerce.Models.ViewModels
         [Required]
         [Display(Name = "New password")]
         public string NewPassword { get; set; }
-        [Required]
-        [Display(Name = "Repeat password")]
-        public string RepeatNewPassword { get; set; }
     }
 }

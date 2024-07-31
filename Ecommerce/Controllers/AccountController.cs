@@ -181,13 +181,6 @@ namespace Ecommerce.Controllers
                 return View(ressetPassword);
             }
 
-            //check password and repeat password is mach or not
-            if (ressetPassword.NewPassword != ressetPassword.RepeatNewPassword)
-            {
-                ModelState.AddModelError("RepeatNewPassword", "password and repeat password not mach");
-                return View(ressetPassword);
-            }
-
             ////-------------------------------------------
 
             var findUser = _context.Users.FirstOrDefault(x => x.Email == ressetPassword.Email && x.RecoveryCode == ressetPassword.RecoveryCode);
