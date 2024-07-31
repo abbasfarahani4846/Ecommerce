@@ -9,12 +9,9 @@ namespace Ecommerce.Models.ViewModels
         [Display(Name = "Recovery Code")]
         public int? RecoveryCode { get; set; }
         [Required]
-        [DataType(DataType.Password)]
         [Display(Name = "New password")]
         public string NewPassword { get; set; }
         [Required]
-        [DataType(DataType.Password)]
-        [Compare("NewPassword")]
         [Display(Name = "Repeat password")]
         public string RepeatNewPassword { get; set; }
     }

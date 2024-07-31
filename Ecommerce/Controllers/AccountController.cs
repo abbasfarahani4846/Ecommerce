@@ -122,7 +122,7 @@ namespace Ecommerce.Controllers
             }
 
             ////-------------------------------------------
-           
+
             Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
             Match match = regex.Match(recoveryPassword.Email);
             if (!match.Success)
@@ -141,7 +141,7 @@ namespace Ecommerce.Controllers
             }
 
             ////-------------------------------------------
-            
+
             findUser.RecoveryCode = new Random().Next(10000, 100000);
             _context.Users.Update(findUser);
             _context.SaveChanges();
@@ -178,6 +178,13 @@ namespace Ecommerce.Controllers
         {
             if (!ModelState.IsValid)
             {
+                return View(ressetPassword);
+            }
+
+            //check password and repeat password is mach or not
+            if (ressetPassword.NewPassword != ressetPassword.RepeatNewPassword)
+            {
+                ModelState.AddModelError("RepeatNewPassword", "password and repeat password not mach");
                 return View(ressetPassword);
             }
 
