@@ -133,8 +133,8 @@ namespace Ecommerce.Controllers
 
             ////-------------------------------------------
 
-            var findUser = _context.Users.FirstOrDefault(x => x.Email == recoveryPassword.Email.Trim());
-            if (findUser == null)
+            var foundUser = _context.Users.FirstOrDefault(x => x.Email == recoveryPassword.Email.Trim());
+            if (foundUser == null)
             {
                 ModelState.AddModelError("Email", "Email is not exist");
                 return View(recoveryPassword);
@@ -142,8 +142,8 @@ namespace Ecommerce.Controllers
 
             ////-------------------------------------------
 
-            findUser.RecoveryCode = new Random().Next(10000, 100000);
-            _context.Users.Update(findUser);
+            foundUser.RecoveryCode = new Random().Next(10000, 100000);
+            _context.Users.Update(foundUser);
             _context.SaveChanges();
 
             ////-------------------------------------------
@@ -152,9 +152,9 @@ namespace Ecommerce.Controllers
             SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
             mail.From = new MailAddress("emailsendertest0055@gmail.com");
-            mail.To.Add(findUser.Email);
+            mail.To.Add(foundUser.Email);
             mail.Subject = "Recovery code";
-            mail.Body = "youre recovery code:" + findUser.RecoveryCode;
+            mail.Body = "youre recovery code:" + foundUser.RecoveryCode;
 
             SmtpServer.Port = 587;
             SmtpServer.Credentials = new System.Net.NetworkCredential("emailsendertest0055@gmail.com", "fflf cwva cbmn bpgb");
@@ -163,7 +163,7 @@ namespace Ecommerce.Controllers
             SmtpServer.Send(mail);
 
             ////-------------------------------------------
-            return Redirect("/Account/RessetPassword?email=" + findUser.Email);
+            return Redirect("/Account/RessetPassword?email=" + foundUser.Email);
         }
         public IActionResult RessetPassword(string email)
         {
@@ -183,8 +183,8 @@ namespace Ecommerce.Controllers
 
             ////-------------------------------------------
 
-            var findUser = _context.Users.FirstOrDefault(x => x.Email == ressetPassword.Email && x.RecoveryCode == ressetPassword.RecoveryCode);
-            if (findUser == null)
+            var foundUser = _context.Users.FirstOrDefault(x => x.Email == ressetPassword.Email && x.RecoveryCode == ressetPassword.RecoveryCode);
+            if (foundUser == null)
             {
                 ModelState.AddModelError("Email", "Email is not exist");
                 return View(ressetPassword);
@@ -192,9 +192,9 @@ namespace Ecommerce.Controllers
 
             ////-------------------------------------------
 
-            findUser.Password = ressetPassword.NewPassword;
+            foundUser.Password = ressetPassword.NewPassword;
 
-            _context.Users.Update(findUser);
+            _context.Users.Update(foundUser);
             _context.SaveChanges();
 
             ////-------------------------------------------
