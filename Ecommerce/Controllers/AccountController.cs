@@ -121,6 +121,8 @@ namespace Ecommerce.Controllers
                 return View();
             }
 
+            ////-------------------------------------------
+           
             Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
             Match match = regex.Match(recoveryPassword.Email);
             if (!match.Success)
@@ -129,6 +131,8 @@ namespace Ecommerce.Controllers
                 return View(recoveryPassword);
             }
 
+            ////-------------------------------------------
+
             var findUser = _context.Users.FirstOrDefault(x => x.Email == recoveryPassword.Email.Trim());
             if (findUser == null)
             {
@@ -136,46 +140,39 @@ namespace Ecommerce.Controllers
                 return View(recoveryPassword);
             }
 
+            ////-------------------------------------------
+            
             findUser.RecoveryCode = new Random().Next(10000, 100000);
             _context.Users.Update(findUser);
             _context.SaveChanges();
 
-            // Set up the email details
-            string to = recoveryPassword.Email; // To address
-            string from = "emailsendertest0055@gmail.com"; // From address
-            string fromPass = "fflf cwva cbmn bpgb";
-            string subject = "Recovery code";
-            string body = "youre recovery code:" + findUser.RecoveryCode;
+            ////-------------------------------------------
 
-            // Create a new MailMessage object
-            MailMessage mail = new MailMessage(from, to, subject, body);
+            MailMessage mail = new MailMessage();
+            SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
-            var smtp = new SmtpClient
-            {
-                Host = "smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(from, fromPass)
-            };
+            mail.From = new MailAddress("emailsendertest0055@gmail.com");
+            mail.To.Add(findUser.Email);
+            mail.Subject = "Recovery code";
+            mail.Body = "youre recovery code:" + findUser.RecoveryCode;
 
-            using (var message = new MailMessage(from, to)
-            {
-                Subject = subject,
-                Body = body
-            }
-            )
-            {
-                smtp.Send(message);
-            }
+            SmtpServer.Port = 587;
+            SmtpServer.Credentials = new System.Net.NetworkCredential("emailsendertest0055@gmail.com", "fflf cwva cbmn bpgb");
+            SmtpServer.EnableSsl = true;
 
-            var ressetPasswordModel = new RessetPasswordViewModel();
-            ressetPasswordModel.Email = findUser.Email;
+            SmtpServer.Send(mail);
 
-            return View("RessetPassword", ressetPasswordModel);
+            ////-------------------------------------------
+            return Redirect("/Account/RessetPassword?email=" + findUser.Email);
         }
-      
+        public IActionResult RessetPassword(string email)
+        {
+            var ressetPasswordModel = new RessetPasswordViewModel();
+            ressetPasswordModel.Email = email;
+
+            return View(ressetPasswordModel);
+        }
+
         [HttpPost]
         public IActionResult RessetPassword(RessetPasswordViewModel ressetPassword)
         {
@@ -184,6 +181,8 @@ namespace Ecommerce.Controllers
                 return View(ressetPassword);
             }
 
+            ////-------------------------------------------
+
             var findUser = _context.Users.FirstOrDefault(x => x.Email == ressetPassword.Email && x.RecoveryCode == ressetPassword.RecoveryCode);
             if (findUser == null)
             {
@@ -191,10 +190,14 @@ namespace Ecommerce.Controllers
                 return View(ressetPassword);
             }
 
+            ////-------------------------------------------
+
             findUser.Password = ressetPassword.NewPassword;
 
             _context.Users.Update(findUser);
             _context.SaveChanges();
+
+            ////-------------------------------------------
 
             return RedirectToAction("Login");
         }
