@@ -302,9 +302,9 @@
                 url: '/Cart/UpdateCart',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ productId, count }),
-                success: function (data) {
-                    $(".item_count").html(data);
+                data: JSON.stringify({ productId: productId, count: count }),
+                success: function (result) {
+                    $(".item_count").html(result);
                     getMiniCart();
                 },
                 error: function () {
@@ -317,8 +317,8 @@
             $.ajax({
                 url: '/Cart/SmallCart',
                 type: 'GET',
-                success: function (data) {
-                    $(".mini_cart").html(data);
+                success: function (result) {
+                    $(".mini_cart").html(result);
                 },
                 error: function () {
                     console.error('Error fetching mini cart');
