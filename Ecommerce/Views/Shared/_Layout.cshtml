@@ -163,11 +163,15 @@
                                         </ul>
                                     </li>
                                     <li>
-                                        <a href="#"><i class="icon-heart icons"></i></a> <span class="item_count">2</span>
+                                        <a href="#"><i class="icon-heart icons"></i></a> <span class="item_count">
+                                            0
+                                        </span>
                                     </li>
                                     <li class="shopping_cart">
                                         <a href="#"><i class="icon-basket-loaded icons"></i></a>
-                                        <span class="item_count">2</span>
+                                        <span class="item_count">
+                                            0
+                                        </span>
                                     </li>
                                 </ul>
                             </div>
@@ -294,51 +298,43 @@
 
     <script>
         function updateCart(productId, count) {
-            try {
-                const response = fetch('/Cart/UpdateCart', {
-                    method: 'POST',
-                
-                    body: JSON.stringify(
-                        {
-                            productId: productId,
-                            count: count
-                        }
-                    )
-                });
+            $.ajax({
+                url: '/Cart/UpdateCart',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ productId: productId, count: count }),
+                success: function (data, textStatus, jqXHR) {
+                    if (jqXHR.status === 404) {
+                        alert('Product not found or count is zero');
+                    } else {
 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
+                        $(".item_count").html(data);
+                        getMiniCart();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error('Error updating cart:', textStatus, errorThrown);
                 }
-
-                const result = response.json();
-
-                console.log(response);
-
-                getMiniCart();
-
-            } catch (error) {
-                console.error('Error updating cart:', error);
-            }
+            });
         }
 
         function getMiniCart() {
-            try {
-                const response = fetch('/Cart/GetSmallCart', {
-                    method: 'GET',
-                });
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
+            $.ajax({
+                url: '/Cart/SmallCart',
+                type: 'GET',
+                success: function (data) {
+                    $(".mini_cart").html(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error('Error updating cart:', textStatus, errorThrown);
                 }
-                console.log(response);
-
-                const result = response.body();
-
-            } catch (error) {
-                console.error('Error updating cart:', error);
-            }
+            });
         }
 
+        $(document).ready(function () {
+
+            getMiniCart();
+        });
 
     </script>
 </body>
