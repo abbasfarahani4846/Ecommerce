@@ -302,18 +302,13 @@
                 url: '/Cart/UpdateCart',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ productId: productId, count: count }),
-                success: function (data, textStatus, jqXHR) {
-                    if (jqXHR.status === 404) {
-                        alert('Product not found or count is zero');
-                    } else {
-
-                        $(".item_count").html(data);
-                        getMiniCart();
-                    }
+                data: JSON.stringify({ productId, count }),
+                success: function (data) {
+                    $(".item_count").html(data);
+                    getMiniCart();
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.error('Error updating cart:', textStatus, errorThrown);
+                error: function () {
+                    alert('Error product not found');
                 }
             });
         }
@@ -325,8 +320,8 @@
                 success: function (data) {
                     $(".mini_cart").html(data);
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.error('Error updating cart:', textStatus, errorThrown);
+                error: function () {
+                    console.error('Error fetching mini cart');
                 }
             });
         }

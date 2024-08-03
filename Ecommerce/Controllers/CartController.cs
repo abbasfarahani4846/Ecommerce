@@ -70,7 +70,9 @@ namespace Ecommerce.Controllers
             option.Expires = DateTime.Now.AddDays(7);
             Response.Cookies.Append("Cart", json, option);
 
-            return new JsonResult(cartItems.Count());
+            var result = cartItems.Sum(x => x.Count);
+
+            return new JsonResult(result);
         }
         public IActionResult SmallCart()
         {
