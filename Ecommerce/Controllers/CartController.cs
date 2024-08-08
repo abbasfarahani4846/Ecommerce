@@ -22,13 +22,16 @@ namespace Ecommerce.Controllers
             return View();
         }
         /// <summary>
-        /// افزودن یا بروزرسانی سبد خرید
+        /// Add or update the shopping cart
         /// </summary>
-        /// <param name="productId">ایدی محصول</param>
-        /// <param name="count">تعداد مورد نظر. اگر صفر باشه یعنی قصد حذف رو داره. این مورد دستی توسط خودمون کنترل میشه</param>
+        /// <param name="productId">Product ID</param>
+        /// <param name="count">
+        /// Desired quantity. If it's zero, it means the intention is to remove the item. 
+        /// This case is manually handled by us.
+        /// </param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult UpdateCart([FromBody] UpdateCartRequestModel request)
+        public IActionResult UpdateCart([FromBody] CartViewModel request)
         {
 
             var product = _context.Products.FirstOrDefault(x => x.Id == request.ProductId);
@@ -36,15 +39,23 @@ namespace Ecommerce.Controllers
             {
                 return NotFound();
             }
-            //گرفتن لیست محصولات در سبد از تابع مخصوص اینکار
+            // Retrieve the list of products in the cart using the dedicated function
             var cartItems = GetCartItems();
 
             var foundProductInCart = cartItems.FirstOrDefault(x => x.ProductId == request.ProductId);
 
-            //اگر محصول پیدا بشه یعنی تو سبدش هست و قصد داره تعداد  خرید رو تغییر بده
-            if (foundProductInCart != null)
+            // If the product is found, it means it is in the cart, and the user intends to change the quantity
+            if (foundProductInCart == null)
             {
-                // اگر بزرگتر از صفر باشه یعنی قصد بروز رسانی تعداد رو در غیر اینصورت از سبد حذف میشه.
+                var newCartItem = new CartViewModel() { };
+                newCartItem.ProductId = request.ProductId;
+                newCartItem.Count = request.Count;
+
+                cartItems.Add(newCartItem);
+            }
+            else
+            {
+                // If greater than zero, it means the user wants to update the quantity; otherwise, it will be removed from the cart.
                 if (request.Count > 0)
                 {
                     foundProductInCart.Count = request.Count;
@@ -53,15 +64,6 @@ namespace Ecommerce.Controllers
                 {
                     cartItems.Remove(foundProductInCart);
                 }
-
-            }
-            else
-            {
-                var newCartItem = new CartViewModel() { };
-                newCartItem.ProductId = request.ProductId;
-                newCartItem.Count = request.Count;
-
-                cartItems.Add(newCartItem);
             }
 
             var json = JsonConvert.SerializeObject(cartItems);
@@ -109,7 +111,8 @@ namespace Ecommerce.Controllers
 
             var prevCartItemsString = Request.Cookies["Cart"];
 
-            //اگر نال نباشه یعنی سبدش خالی نیست و باید تبدیلش کنیم به لیستی از ویو مدل در غیر اینصورت لیست خالی سبد بر میگردونیم
+            // If it's not null, it means the cart is not empty, so we need to convert it to a list of view models; 
+            // otherwise, we return an empty cart list.
             if (!string.IsNullOrEmpty(prevCartItemsString))
             {
                 cartList = JsonConvert.DeserializeObject<List<CartViewModel>>(prevCartItemsString);
@@ -117,5 +120,6 @@ namespace Ecommerce.Controllers
 
             return cartList;
         }
+
     }
 }
