@@ -19,6 +19,7 @@ namespace Ecommerce.Controllers
         }
         public IActionResult Index()
         {
+            // ReSharper disable once Mvc.ViewNotResolved
             return View();
         }
         /// <summary>
@@ -92,17 +93,24 @@ namespace Ecommerce.Controllers
                 .ToList();
 
             // Create the ProductCartViewModel list
-            var productCartViewModels = products.Select(ps => new ProductCartViewModel
+            
+            List<ProductCartViewModel> result = new List<ProductCartViewModel>();
+            foreach (var item in products)
             {
-                Id = ps.Id,
-                ImageName = ps.ImageName,
-                Price = ps.Price - (ps.Discount ?? 0),
-                Title = ps.Title,
-                Count = cartItems.Single(x => x.ProductId == ps.Id).Count,
-                RowSumPrice = (ps.Price - (ps.Discount ?? 0)) * cartItems.Single(x => x.ProductId == ps.Id).Count,
-            }).ToList();
+                var newItem = new ProductCartViewModel
+                {
+                    Id = item.Id,
+                    ImageName = item.ImageName,
+                    Price = item.Price - (item.Discount ?? 0),
+                    Title = item.Title,
+                    Count = cartItems.Single(x => x.ProductId == item.Id).Count,
+                    RowSumPrice = (item.Price - (item.Discount ?? 0)) * cartItems.Single(x => x.ProductId == item.Id).Count,
+                };
+                
+                result.Add(newItem);    
+            }
 
-            return PartialView(productCartViewModels);
+            return PartialView(result);
         }
 
         public List<CartViewModel> GetCartItems()
