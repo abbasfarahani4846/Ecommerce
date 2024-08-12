@@ -2,28 +2,33 @@
 
 @if (Model != null && Model.Any())
 {
-
     <div class="cart_gallery">
         <div class="cart_close">
             <div class="cart_text">
                 <h3>cart</h3>
             </div>
             <div class="mini_cart_close">
-                <a href="javascript:void(0)"><i class="icon-close icons"></i></a>
+                <a href="javascript:void(0)">
+                    <i class="icon-close icons"></i>
+                </a>
             </div>
         </div>
         @foreach (var item in Model)
         {
             <div class="cart_item">
                 <div class="cart_img">
-                    <a href="/product/ProductDetails/@item.Id"><img src="/images/products/@item.ImageName" alt="@item.Title"></a>
+                    <a href="/product/ProductDetails/@item.Id">
+                        <img src="/images/products/@item.ImageName" alt="@item.Title">
+                    </a>
                 </div>
                 <div class="cart_info">
                     <a href="#">Primis In Faucibus</a>
                     <p>@item.Count x <span> $@item.Price </span></p>
                 </div>
                 <div class="cart_remove">
-                    <a onclick="updateCart(@item.Id,0)"><i class="icon-close icons"></i></a>
+                    <a onclick="updateCart(@item.Id,0)">
+                        <i class="icon-close icons"></i>
+                    </a>
                 </div>
             </div>
         }
@@ -39,13 +44,17 @@
             </div>
         </div>
     </div>
+
+    <script>
+     $(".item_count").html(@Model.Sum(x => x.Count));
+    </script>
 }
 
 <div class="mini_cart_footer">
     <div class="cart_button">
-        <a href="cart.html"><i class="fa fa-shopping-cart"></i> View cart</a>
+        <a href="/cart"><i class="fa fa-shopping-cart"></i> View cart</a>
     </div>
     <div class="cart_button">
-        <a href="checkout.html"><i class="fa fa-sign-in"></i> Checkout</a>
+        <a href="/cart/checkout"><i class="fa fa-sign-in"></i> Checkout</a>
     </div>
 </div>

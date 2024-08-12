@@ -1,27 +1,61 @@
 ﻿using Ecommerce.Models.db;
 using Ecommerce.Models.ViewModels;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+using System.Net;
 
 namespace Ecommerce.Controllers
 {
     public class CartController : Controller
     {
         private OnlineShopContext _context;
+
         public CartController(OnlineShopContext context)
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
-            // ReSharper disable once Mvc.ViewNotResolved
-            return View();
+            var cartItems = GetCartItems();
+
+            if (!cartItems.Any())
+            {
+                return View();
+            }
+
+            var cartItemProductIds = cartItems.Select(x => x.ProductId).ToList();
+            // Load products into memory
+            var products = _context.Products
+                .Where(p => cartItemProductIds.Contains(p.Id))
+                .ToList();
+
+            // Create the ProductCartViewModel list
+
+            List<ProductCartViewModel> result = new List<ProductCartViewModel>();
+            foreach (var item in products)
+            {
+                var newItem = new ProductCartViewModel
+                {
+                    Id = item.Id,
+                    ImageName = item.ImageName,
+                    Price = item.Price - (item.Discount ?? 0),
+                    Title = item.Title,
+                    Count = cartItems.Single(x => x.ProductId == item.Id).Count,
+                    RowSumPrice = (item.Price - (item.Discount ?? 0)) *
+                                  cartItems.Single(x => x.ProductId == item.Id).Count,
+                };
+
+                result.Add(newItem);
+            }
+
+            return View(result);
         }
+
         /// <summary>
         /// Add or update the shopping cart
         /// </summary>
@@ -34,12 +68,12 @@ namespace Ecommerce.Controllers
         [HttpPost]
         public IActionResult UpdateCart([FromBody] CartViewModel request)
         {
-
             var product = _context.Products.FirstOrDefault(x => x.Id == request.ProductId);
             if (product == null)
             {
                 return NotFound();
             }
+
             // Retrieve the list of products in the cart using the dedicated function
             var cartItems = GetCartItems();
 
@@ -75,8 +109,9 @@ namespace Ecommerce.Controllers
 
             var result = cartItems.Sum(x => x.Count);
 
-            return new JsonResult(result);
+            return Ok(result);
         }
+
         public IActionResult SmallCart()
         {
             var cartItems = GetCartItems();
@@ -93,7 +128,7 @@ namespace Ecommerce.Controllers
                 .ToList();
 
             // Create the ProductCartViewModel list
-            
+
             List<ProductCartViewModel> result = new List<ProductCartViewModel>();
             foreach (var item in products)
             {
@@ -104,13 +139,19 @@ namespace Ecommerce.Controllers
                     Price = item.Price - (item.Discount ?? 0),
                     Title = item.Title,
                     Count = cartItems.Single(x => x.ProductId == item.Id).Count,
-                    RowSumPrice = (item.Price - (item.Discount ?? 0)) * cartItems.Single(x => x.ProductId == item.Id).Count,
+                    RowSumPrice = (item.Price - (item.Discount ?? 0)) *
+                                  cartItems.Single(x => x.ProductId == item.Id).Count,
                 };
-                
-                result.Add(newItem);    
+
+                result.Add(newItem);
             }
 
             return PartialView(result);
+        }
+        public IActionResult ClearCart()
+        {
+            Response.Cookies.Delete("Cart");
+            return Redirect("/");
         }
 
         public List<CartViewModel> GetCartItems()
@@ -128,6 +169,11 @@ namespace Ecommerce.Controllers
 
             return cartList;
         }
+        [HttpPost]
+        public IActionResult ApplyCoupon([FromForm] string code)
+        {
 
+            return Redirect("/Cart");
+        }
     }
 }
