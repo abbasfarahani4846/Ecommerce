@@ -24,7 +24,7 @@
                                 <tbody>
                                     @foreach (var item in Model)
                                     {
-                                        <tr class="border-top">
+                                        <tr class="border-top" id="@item.Id">
                                             <td>
                                                 <div class="cart_product_thumb">
                                                     <img src="/images/products/@item.ImageName" alt="@item.Title">

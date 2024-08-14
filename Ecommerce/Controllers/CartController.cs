@@ -1,8 +1,10 @@
 ﻿using Ecommerce.Models.db;
 using Ecommerce.Models.ViewModels;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -21,41 +23,30 @@ namespace Ecommerce.Controllers
 
         public IActionResult Index()
         {
-            var cartItems = GetCartItems();
-
-            if (!cartItems.Any())
-            {
-                return View();
-            }
-
-            var cartItemProductIds = cartItems.Select(x => x.ProductId).ToList();
-            // Load products into memory
-            var products = _context.Products
-                .Where(p => cartItemProductIds.Contains(p.Id))
-                .ToList();
-
-            // Create the ProductCartViewModel list
-
-            List<ProductCartViewModel> result = new List<ProductCartViewModel>();
-            foreach (var item in products)
-            {
-                var newItem = new ProductCartViewModel
-                {
-                    Id = item.Id,
-                    ImageName = item.ImageName,
-                    Price = item.Price - (item.Discount ?? 0),
-                    Title = item.Title,
-                    Count = cartItems.Single(x => x.ProductId == item.Id).Count,
-                    RowSumPrice = (item.Price - (item.Discount ?? 0)) *
-                                  cartItems.Single(x => x.ProductId == item.Id).Count,
-                };
-
-                result.Add(newItem);
-            }
+            var result = GetProductCarts();
 
             return View(result);
         }
 
+        public IActionResult Checkout()
+        {
+            ViewData["Products"] = GetProductCarts();
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ApplyCoupon([FromForm] string code)
+        {
+            var coupon = _context.Coupons.FirstOrDefault(c => c.Code == code);
+            //if (coupon == null)
+            //{
+            //    return Redirect()
+            //}
+
+
+            return Redirect("/Cart");
+        }
         /// <summary>
         /// Add or update the shopping cart
         /// </summary>
@@ -114,11 +105,23 @@ namespace Ecommerce.Controllers
 
         public IActionResult SmallCart()
         {
+            var result = GetProductCarts();
+
+            return PartialView(result);
+        }
+        public IActionResult ClearCart()
+        {
+            Response.Cookies.Delete("Cart");
+            return Redirect("/");
+        }
+
+        public List<ProductCartViewModel> GetProductCarts()
+        {
             var cartItems = GetCartItems();
 
             if (!cartItems.Any())
             {
-                return PartialView(null);
+                return null;
             }
 
             var cartItemProductIds = cartItems.Select(x => x.ProductId).ToList();
@@ -146,14 +149,8 @@ namespace Ecommerce.Controllers
                 result.Add(newItem);
             }
 
-            return PartialView(result);
+            return result;
         }
-        public IActionResult ClearCart()
-        {
-            Response.Cookies.Delete("Cart");
-            return Redirect("/");
-        }
-
         public List<CartViewModel> GetCartItems()
         {
             List<CartViewModel> cartList = new List<CartViewModel>();
@@ -169,11 +166,6 @@ namespace Ecommerce.Controllers
 
             return cartList;
         }
-        [HttpPost]
-        public IActionResult ApplyCoupon([FromForm] string code)
-        {
-
-            return Redirect("/Cart");
-        }
+ 
     }
 }
