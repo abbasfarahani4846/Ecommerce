@@ -10,6 +10,12 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<OnlineShopContext>();
 
+//--------
+//builder.Services.AddMvc().AddSessionStateTempDataProvider();
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
+//--------
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
         .AddCookie(options =>
         {
@@ -29,12 +35,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication(); // Added for authentication
 app.UseAuthorization();
 
+
+//------
+app.UseSession();
+//-------
 
 app.MapControllerRoute(
     name: "Admin",

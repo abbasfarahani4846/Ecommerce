@@ -1,6 +1,10 @@
-﻿using Ecommerce.Models.db;
+﻿
+
+using Ecommerce.Models;
+using Ecommerce.Models.db;
 using Ecommerce.Models.ViewModels;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -8,16 +12,22 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using PayPal.Api;
+
 using System.Net;
+using System.Security.Claims;
 
 namespace Ecommerce.Controllers
 {
     public class CartController : Controller
     {
         private OnlineShopContext _context;
-
-        public CartController(OnlineShopContext context)
+        private IHttpContextAccessor _httpContextAccessor;
+        IConfiguration _configuration;
+        public CartController(OnlineShopContext context, IHttpContextAccessor httpContextAccessor, IConfiguration iconfiguration)
         {
+            _httpContextAccessor = httpContextAccessor;
+            _configuration = iconfiguration;
             _context = context;
         }
 
@@ -27,26 +37,217 @@ namespace Ecommerce.Controllers
 
             return View(result);
         }
-
-        public IActionResult Checkout()
+        [Authorize]
+        public IActionResult Checkout(string? code)
         {
+            var order = new Models.db.Order();
+
+            // Retrieve the User ID from the claims
+            order.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            // Retrieve the Email from the claims
+            order.Email = User.FindFirstValue(ClaimTypes.Email);
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                var coupon = _context.Coupons.FirstOrDefault(c => c.Code == code);
+
+                if (coupon != null)
+                {
+                    order.CouponCode = coupon.Code;
+                    order.CouponDiscount = coupon.Discount;
+                }
+                else
+                {
+                    TempData["message"] = "Coupon not exitst";
+                }
+            }
+
+            var shipping = _context.Settings.First().Shipping;
+            if (shipping != null)
+            {
+                order.Shipping = shipping;
+            }
+
             ViewData["Products"] = GetProductCarts();
-
-            return View();
+            return View(order);
         }
-
+        [Authorize]
         [HttpPost]
-        public IActionResult ApplyCoupon([FromForm] string code)
+        public IActionResult SubmitOrder(Models.db.Order order)
         {
-            var coupon = _context.Coupons.FirstOrDefault(c => c.Code == code);
-            //if (coupon == null)
-            //{
-            //    return Redirect()
-            //}
 
+            if (!ModelState.IsValid)
+            {
+                ViewData["Products"] = GetProductCarts();
 
-            return Redirect("/Cart");
+                return RedirectToAction("Checkout", order);
+            }
+
+            //-------------------------------------------------------
+
+            //check and find coupon
+            if (!string.IsNullOrEmpty(order.CouponCode))
+            {
+                var coupon = _context.Coupons.FirstOrDefault(c => c.Code == order.CouponCode);
+
+                if (coupon != null)
+                {
+                    order.CouponCode = coupon.Code;
+                    order.CouponDiscount = coupon.Discount;
+                }
+                else
+                {
+                    TempData["message"] = "Coupon not exitst";
+
+                    ViewData["Products"] = GetProductCarts();
+
+                    return RedirectToAction("Checkout", order);
+                }
+            }
+
+            //-------------------------------------------------------
+            var products = GetProductCarts();
+
+            List<OrderDetail> orderDetails = new List<OrderDetail>();
+
+            foreach (var item in products)
+            {
+                OrderDetail orderDetailItem = new OrderDetail()
+                {
+                    Count = item.Count,
+                    Id = item.Id,
+                    ProductTitle = item.Title,
+                    ProductPrice = (decimal)item.Price,
+                    OrderId = order.Id,
+                    ProductId = item.Id
+                };
+
+                orderDetails.Add(orderDetailItem);
+            }
+            //-------------------------------------------------------
+
+            order.SubTotal = orderDetails.Sum(x => x.Count * x.ProductPrice);
+            order.Shipping = _context.Settings.First().Shipping;
+            order.Total = (order.SubTotal + order.Shipping ?? 0) - order.CouponDiscount ?? 0;
+            order.CreateDate = DateTime.Now;
+
+            _context.OrderDetails.AddRange(orderDetails);
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+
+            // Redirect to PayPal
+            return RedirectToAction("RedirectToPayPal", new { orderId = order.Id });
         }
+
+        public ActionResult RedirectToPayPal(int orderId)
+        {
+            var order = _context.Orders.Find(orderId);
+            if (order == null)
+            {
+                return View("PaymentFailed");
+            }
+
+            var orderDetails = _context.OrderDetails.Where(x => x.OrderId == orderId).ToList();
+
+            var clientId = _configuration.GetValue<string>("PayPal:Key");
+            var clientSecret = _configuration.GetValue<string>("PayPal:Secret");
+            var mode = _configuration.GetValue<string>("PayPal:mode");
+            var apiContext = PaypalConfiguration.GetAPIContext(clientId, clientSecret, mode);
+
+            try
+            {
+                string baseURI = $"{Request.Scheme}://{Request.Host}/cart/PaypalReturn?";
+                var guid = Guid.NewGuid().ToString();
+
+                var payment = new Payment
+                {
+                    intent = "sale",
+                    payer = new Payer { payment_method = "paypal" },
+                    transactions = new List<Transaction>
+            {
+                new Transaction
+                {
+                    description = $"Order {order.Id}",
+                    invoice_number = Guid.NewGuid().ToString(),
+                    amount = new Amount
+                    {
+                        currency = "USD",
+                        total = order.Total?.ToString()
+                        //total = "5.00"
+                    },
+                    item_list = new ItemList
+                    {
+                        items = orderDetails.Select(p => new Item
+                        {
+                            name = p.ProductTitle,
+                            currency = "USD",
+                            price = p.ProductPrice.ToString(),
+                            //price = "5.00",
+                            quantity = p.Count.ToString(),
+                            sku = p.ProductId.ToString()
+                        }).ToList()
+                    }
+                }
+            },
+                    redirect_urls = new RedirectUrls
+                    {
+                        cancel_url = $"{baseURI}&Cancel=true",
+                        return_url = $"{baseURI}orderId={order.Id}"
+                    }
+                };
+
+                var createdPayment = payment.Create(apiContext);
+                var approvalUrl = createdPayment.links.FirstOrDefault(l => l.rel.ToLower() == "approval_url")?.href;
+
+                _httpContextAccessor.HttpContext.Session.SetString("payment", createdPayment.id);
+                return Redirect(approvalUrl);
+            }
+            catch (Exception e)
+            {
+                return View("PaymentFailed");
+            }
+        }
+
+        public ActionResult PaypalReturn(int orderId, string PayerID)
+        {
+            var order = _context.Orders.Find(orderId);
+            if (order == null)
+            {
+                return View("PaymentFailed");
+            }
+
+            var clientId = _configuration.GetValue<string>("PayPal:Key");
+            var clientSecret = _configuration.GetValue<string>("PayPal:Secret");
+            var mode = _configuration.GetValue<string>("PayPal:mode");
+            var apiContext = PaypalConfiguration.GetAPIContext(clientId, clientSecret, mode);
+
+            try
+            {
+                var paymentId = _httpContextAccessor.HttpContext.Session.GetString("payment");
+                var paymentExecution = new PaymentExecution { payer_id = PayerID };
+                var payment = new Payment { id = paymentId };
+
+                var executedPayment = payment.Execute(apiContext, paymentExecution);
+
+                if (executedPayment.state.ToLower() != "approved")
+                {
+                    return View("PaymentFailed");
+                }
+
+                Response.Cookies.Delete("Cart");
+                // Save the PayPal transaction ID and update order status
+                order.TransId = executedPayment.transactions[0].related_resources[0].sale.id;
+                order.Status = executedPayment.state.ToLower();
+                _context.SaveChanges();
+
+                return View("PaymentSuccess");
+            }
+            catch (Exception)
+            {
+                return View("PaymentFailed");
+            }
+        }
+
         /// <summary>
         /// Add or update the shopping cart
         /// </summary>
@@ -166,6 +367,6 @@ namespace Ecommerce.Controllers
 
             return cartList;
         }
- 
+
     }
 }

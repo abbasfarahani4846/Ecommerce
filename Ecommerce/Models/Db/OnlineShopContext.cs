@@ -31,6 +31,8 @@ public partial class OnlineShopContext : DbContext
 
     public virtual DbSet<ProductGalery> ProductGaleries { get; set; }
 
+    public virtual DbSet<Setting> Settings { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -108,7 +110,9 @@ public partial class OnlineShopContext : DbContext
         modelBuilder.Entity<Product>(entity =>
         {
             entity.Property(e => e.Category).HasMaxLength(100);
+            entity.Property(e => e.Discount).HasColumnType("money");
             entity.Property(e => e.ImageName).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("money");
             entity.Property(e => e.Title)
                 .HasMaxLength(500)
                 .HasColumnName("TItle");
@@ -119,6 +123,13 @@ public partial class OnlineShopContext : DbContext
             entity.ToTable("ProductGalery");
 
             entity.Property(e => e.ImageName).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Setting>(entity =>
+        {
+            entity.HasNoKey();
+
+            entity.Property(e => e.Shipping).HasColumnType("money");
         });
 
         modelBuilder.Entity<User>(entity =>

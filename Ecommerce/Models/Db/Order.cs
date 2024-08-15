@@ -7,6 +7,8 @@ public partial class Order
 {
     public int Id { get; set; }
 
+    public int UserId { get; set; }
+
     public string FirstName { get; set; } = null!;
 
     public string LastName { get; set; } = null!;
@@ -29,11 +31,11 @@ public partial class Order
 
     public decimal? CouponDiscount { get; set; }
 
-    public decimal Shipping { get; set; }
+    public decimal? Shipping { get; set; }
 
-    public decimal SubTotal { get; set; }
+    public decimal? SubTotal { get; set; }
 
-    public decimal Total { get; set; }
+    public decimal? Total { get; set; }
 
     public DateTime? CreateDate { get; set; }
 

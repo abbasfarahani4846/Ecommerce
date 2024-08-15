@@ -13,9 +13,9 @@ public partial class Product
 
     public string? Text { get; set; }
 
-    public int? Price { get; set; }
+    public decimal? Price { get; set; }
 
-    public int? Discount { get; set; }
+    public decimal? Discount { get; set; }
 
     public string? ImageName { get; set; }
 
