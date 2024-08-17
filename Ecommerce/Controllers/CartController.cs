@@ -38,7 +38,7 @@ namespace Ecommerce.Controllers
             return View(result);
         }
         [Authorize]
-        public IActionResult Checkout(string? couponCode)
+        public IActionResult Checkout()
         {
             var order = new Models.db.Order();
 
@@ -46,21 +46,6 @@ namespace Ecommerce.Controllers
             order.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             // Retrieve the Email from the claims
             order.Email = User.FindFirstValue(ClaimTypes.Email);
-
-            if (!string.IsNullOrEmpty(couponCode))
-            {
-                var coupon = _context.Coupons.FirstOrDefault(c => c.Code == couponCode);
-
-                if (coupon != null)
-                {
-                    order.CouponCode = coupon.Code;
-                    order.CouponDiscount = coupon.Discount;
-                }
-                else
-                {
-                    TempData["message"] = "Coupon not exitst";
-                }
-            }
 
             var shipping = _context.Settings.First().Shipping;
             if (shipping != null)
@@ -71,6 +56,41 @@ namespace Ecommerce.Controllers
             ViewData["Products"] = GetProductsinCart();
             return View(order);
         }
+        [Authorize]
+        [HttpPost]
+        public IActionResult ApplyCouponCode([FromForm]string couponCode)
+        {
+            var order = new Models.db.Order();
+
+            var coupon = _context.Coupons.FirstOrDefault(c => c.Code == couponCode);
+
+            if (coupon != null)
+            {
+                order.CouponCode = coupon.Code;
+                order.CouponDiscount = coupon.Discount;
+            }
+            else
+            {
+                ViewData["Products"] = GetProductsinCart();
+                TempData["message"] = "Coupon not exitst";
+                return View("Checkout",order);
+            }
+
+            // Retrieve the User ID from the claims
+            order.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            // Retrieve the Email from the claims
+            order.Email = User.FindFirstValue(ClaimTypes.Email);
+
+            var shipping = _context.Settings.First().Shipping;
+            if (shipping != null)
+            {
+                order.Shipping = shipping;
+            }
+
+            ViewData["Products"] = GetProductsinCart();
+            return View("Checkout", order);
+        }
+
         [Authorize]
         [HttpPost]
         public IActionResult SubmitOrder(Models.db.Order order)
@@ -120,7 +140,7 @@ namespace Ecommerce.Controllers
             _context.SaveChanges();
 
             //-------------------------------------------------------
-          
+
             List<OrderDetail> orderDetails = new List<OrderDetail>();
 
             foreach (var item in products)
