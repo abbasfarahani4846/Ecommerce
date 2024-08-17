@@ -13,6 +13,13 @@
                 <div class="row">
                     <div class="col-lg-5 col-md-6">
                         <div class="user-actions">
+                            @if (TempData["message"] != null)
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    @TempData["message"]
+                                </div>
+                            }
+
                             <h3>
                                 <i class="fa fa-comment-o" aria-hidden="true"></i>
                                 Have a Coupon ?
@@ -42,10 +49,10 @@
         <form action="/cart/SubmitOrder" method="post">
             @if (!string.IsNullOrEmpty(Model.CouponCode))
             {
-                <input type="hidden" asp-for="CouponCode" />
+                <input type="hidden" asp-for="CouponCode"/>
             }
-            <input type="hidden" asp-for="UserId" />
-            <input type="hidden" asp-for="Email" />
+            <input type="hidden" asp-for="UserId"/>
+            <input type="hidden" asp-for="Email"/>
 
             <div class="checkout_form">
                 <div class="row">
@@ -55,7 +62,7 @@
                         <div class="checkout_form_input">
                             <label for="country">country <span>*</span></label>
                             <select class="select_option" asp-for="Country" id="country">
-                                <option value="2">United Kingdom (UK)  </option>
+                                <option value="2">United Kingdom (UK) </option>
                                 <option value="3">Algeria</option>
                                 <option value="4">Afghanistan</option>
                                 <option value="5">Ghana</option>
@@ -70,7 +77,7 @@
                             <input type="text" asp-for="FirstName">
                         </div>
                         <div class="checkout_form_input">
-                            <label>Last Name  <span>*</span></label>
+                            <label>Last Name <span>*</span></label>
                             <input type="text" asp-for="LastName">
                         </div>
                         <div class="checkout_form_input">
@@ -78,7 +85,7 @@
                             <input type="text" asp-for="CompanyName">
                         </div>
                         <div class="checkout_form_input">
-                            <label>Address  <span>*</span></label>
+                            <label>Address <span>*</span></label>
                             <input type="text" asp-for="Address">
                         </div>
                         <div class="checkout_form_input">
@@ -100,68 +107,70 @@
                             <div class="order_table table-responsive">
                                 <table>
                                     <thead>
-                                        <tr>
-                                            <th>Product</th>
-                                            <th class="text-right">Total</th>
-                                        </tr>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th class="text-right">Total</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in products)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    @item.Title
-                                                </td>
-                                                <td>
-                                                    $@item.RowSumPrice.GetValueOrDefault().ToString("F")
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                    <tfoot>
+                                    @foreach (var item in products)
+                                    {
                                         <tr>
-                                            <td>Cart Subtotal  </td>
-                                            <td class="text-right">
-                                                $@products.Sum(x => x.RowSumPrice)?.ToString("F")
+                                            <td>
+                                                @item.Title
+                                            </td>
+                                            <td>
+                                                $@item.RowSumPrice.GetValueOrDefault().ToString("F")
                                             </td>
                                         </tr>
-                                        @if (Model.Shipping != null)
-                                        {
-                                            <tr>
-                                                <td>Shipping  </td>
-                                                <td class="text-right">$@Model.Shipping?.ToString("F")</td>
-                                            </tr>
-                                        }
-
-                                        @if (!string.IsNullOrEmpty(Model.CouponCode))
-                                        {
-                                            <tr>
-                                                <td>
-                                                    Discount - &nbsp; @Model.CouponCode  &nbsp;  &nbsp;
-                                                    <a href="/cart/checkout"><i class="ion-android-close"></i></a>
-                                                </td>
-                                                <td class="text-right">
-                                                    $@Model.CouponDiscount?.ToString("F")
-                                                </td>
-                                            </tr>
-                                        }
-
-                                        <tr class="order_total">
-                                            <th>Order Total</th>
-                                            @{
-                                                var orderTotal = (products.Sum(x => x.RowSumPrice) + Model.Shipping);
-                                                if (Model.CouponDiscount != null)
-                                                {
-                                                    orderTotal -= Model.CouponDiscount;
-                                                }
-                                            }
-                                            <td class="text-right">$@orderTotal?.ToString("F")</td>
+                                    }
+                                    </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <td>Cart Subtotal </td>
+                                        <td class="text-right">
+                                            $@products.Sum(x => x.RowSumPrice)?.ToString("F")
+                                        </td>
+                                    </tr>
+                                    @if (Model.Shipping != null)
+                                    {
+                                        <tr>
+                                            <td>Shipping </td>
+                                            <td class="text-right">$@Model.Shipping?.ToString("F")</td>
                                         </tr>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.CouponCode))
+                                    {
+                                        <tr>
+                                            <td>
+                                                Discount - &nbsp; @Model.CouponCode &nbsp; &nbsp;
+                                                <a href="/cart/checkout">
+                                                    <i class="ion-android-close"></i>
+                                                </a>
+                                            </td>
+                                            <td class="text-right">
+                                                $@Model.CouponDiscount?.ToString("F")
+                                            </td>
+                                        </tr>
+                                    }
+
+                                    <tr class="order_total">
+                                        <th>Order Total</th>
+                                        @{
+                                            var orderTotal = (products.Sum(x => x.RowSumPrice) + Model.Shipping);
+                                            if (Model.CouponDiscount != null)
+                                            {
+                                                orderTotal -= Model.CouponDiscount;
+                                            }
+                                        }
+                                        <td class="text-right">$@orderTotal?.ToString("F")</td>
+                                    </tr>
                                     </tfoot>
                                 </table>
                             </div>
                             <div class="place_order_btn">
-                                <input class="btn btn-primary btn-block" type="submit" value="place order" />
+                                <input class="btn btn-primary btn-block" type="submit" value="place order"/>
                             </div>
                         </div>
                     </div>

@@ -98,16 +98,29 @@ namespace Ecommerce.Controllers
                 else
                 {
                     TempData["message"] = "Coupon not exitst";
-
                     ViewData["Products"] = GetProductCarts();
 
                     return RedirectToAction("Checkout", order);
                 }
             }
 
-            //-------------------------------------------------------
             var products = GetProductCarts();
 
+            order.Shipping = _context.Settings.First().Shipping;
+            order.CreateDate = DateTime.Now;
+            order.SubTotal = products.Sum(x => x.RowSumPrice);
+            order.Total = (order.SubTotal + order.Shipping ?? 0);
+
+            if (order.CouponDiscount != null)
+            {
+                order.Total -= order.CouponDiscount;
+            }
+
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+
+            //-------------------------------------------------------
+          
             List<OrderDetail> orderDetails = new List<OrderDetail>();
 
             foreach (var item in products)
@@ -115,7 +128,6 @@ namespace Ecommerce.Controllers
                 OrderDetail orderDetailItem = new OrderDetail()
                 {
                     Count = item.Count,
-                    Id = item.Id,
                     ProductTitle = item.Title,
                     ProductPrice = (decimal)item.Price,
                     OrderId = order.Id,
@@ -125,14 +137,7 @@ namespace Ecommerce.Controllers
                 orderDetails.Add(orderDetailItem);
             }
             //-------------------------------------------------------
-
-            order.SubTotal = orderDetails.Sum(x => x.Count * x.ProductPrice);
-            order.Shipping = _context.Settings.First().Shipping;
-            order.Total = (order.SubTotal + order.Shipping ?? 0) - order.CouponDiscount ?? 0;
-            order.CreateDate = DateTime.Now;
-
             _context.OrderDetails.AddRange(orderDetails);
-            _context.Orders.Add(order);
             _context.SaveChanges();
 
             // Redirect to PayPal
@@ -172,21 +177,22 @@ namespace Ecommerce.Controllers
                     amount = new Amount
                     {
                         currency = "USD",
-                        total = order.Total?.ToString()
+                        total = order.Total?.ToString("F"),
                         //total = "5.00"
                     },
+
                     item_list = new ItemList
                     {
                         items = orderDetails.Select(p => new Item
                         {
                             name = p.ProductTitle,
                             currency = "USD",
-                            price = p.ProductPrice.ToString(),
-                            //price = "5.00",
+                            price = p.ProductPrice.ToString("F"),
                             quantity = p.Count.ToString(),
-                            sku = p.ProductId.ToString()
-                        }).ToList()
-                    }
+                            sku = p.ProductId.ToString(),
+                        }).ToList(),
+
+                    },
                 }
             },
                     redirect_urls = new RedirectUrls
@@ -195,6 +201,15 @@ namespace Ecommerce.Controllers
                         return_url = $"{baseURI}orderId={order.Id}"
                     }
                 };
+                //Add shipping price
+                payment.transactions[0].item_list.items.Add(new Item
+                {
+                    name = "Shipping cost",
+                    currency = "USD",
+                    price = order.Shipping?.ToString("F"),
+                    quantity = "1",
+                    sku = "1",
+                });
 
                 var createdPayment = payment.Create(apiContext);
                 var approvalUrl = createdPayment.links.FirstOrDefault(l => l.rel.ToLower() == "approval_url")?.href;

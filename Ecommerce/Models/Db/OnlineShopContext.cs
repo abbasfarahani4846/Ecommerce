@@ -102,7 +102,6 @@ public partial class OnlineShopContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.Property(e => e.Count).HasColumnType("money");
             entity.Property(e => e.ProductPrice).HasColumnType("money");
             entity.Property(e => e.ProductTitle).HasMaxLength(200);
         });

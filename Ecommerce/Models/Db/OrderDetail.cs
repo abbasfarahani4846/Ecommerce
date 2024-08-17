@@ -11,7 +11,7 @@ public partial class OrderDetail
 
     public decimal ProductPrice { get; set; }
 
-    public decimal Count { get; set; }
+    public int Count { get; set; }
 
     public int OrderId { get; set; }
 
