@@ -33,12 +33,12 @@ namespace Ecommerce.Controllers
 
         public IActionResult Index()
         {
-            var result = GetProductCarts();
+            var result = GetProductsinCart();
 
             return View(result);
         }
         [Authorize]
-        public IActionResult Checkout(string? code)
+        public IActionResult Checkout(string? couponCode)
         {
             var order = new Models.db.Order();
 
@@ -47,9 +47,9 @@ namespace Ecommerce.Controllers
             // Retrieve the Email from the claims
             order.Email = User.FindFirstValue(ClaimTypes.Email);
 
-            if (!string.IsNullOrEmpty(code))
+            if (!string.IsNullOrEmpty(couponCode))
             {
-                var coupon = _context.Coupons.FirstOrDefault(c => c.Code == code);
+                var coupon = _context.Coupons.FirstOrDefault(c => c.Code == couponCode);
 
                 if (coupon != null)
                 {
@@ -68,7 +68,7 @@ namespace Ecommerce.Controllers
                 order.Shipping = shipping;
             }
 
-            ViewData["Products"] = GetProductCarts();
+            ViewData["Products"] = GetProductsinCart();
             return View(order);
         }
         [Authorize]
@@ -78,7 +78,7 @@ namespace Ecommerce.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewData["Products"] = GetProductCarts();
+                ViewData["Products"] = GetProductsinCart();
 
                 return RedirectToAction("Checkout", order);
             }
@@ -98,13 +98,13 @@ namespace Ecommerce.Controllers
                 else
                 {
                     TempData["message"] = "Coupon not exitst";
-                    ViewData["Products"] = GetProductCarts();
+                    ViewData["Products"] = GetProductsinCart();
 
                     return RedirectToAction("Checkout", order);
                 }
             }
 
-            var products = GetProductCarts();
+            var products = GetProductsinCart();
 
             order.Shipping = _context.Settings.First().Shipping;
             order.CreateDate = DateTime.Now;
@@ -321,7 +321,7 @@ namespace Ecommerce.Controllers
 
         public IActionResult SmallCart()
         {
-            var result = GetProductCarts();
+            var result = GetProductsinCart();
 
             return PartialView(result);
         }
@@ -331,7 +331,7 @@ namespace Ecommerce.Controllers
             return Redirect("/");
         }
 
-        public List<ProductCartViewModel> GetProductCarts()
+        public List<ProductCartViewModel> GetProductsinCart()
         {
             var cartItems = GetCartItems();
 
