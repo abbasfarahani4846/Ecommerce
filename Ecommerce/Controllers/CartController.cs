@@ -42,11 +42,6 @@ namespace Ecommerce.Controllers
         {
             var order = new Models.db.Order();
 
-            // Retrieve the User ID from the claims
-            order.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            // Retrieve the Email from the claims
-            order.Email = User.FindFirstValue(ClaimTypes.Email);
-
             var shipping = _context.Settings.First().Shipping;
             if (shipping != null)
             {
@@ -58,7 +53,7 @@ namespace Ecommerce.Controllers
         }
         [Authorize]
         [HttpPost]
-        public IActionResult ApplyCouponCode([FromForm]string couponCode)
+        public IActionResult ApplyCouponCode([FromForm] string couponCode)
         {
             var order = new Models.db.Order();
 
@@ -73,13 +68,8 @@ namespace Ecommerce.Controllers
             {
                 ViewData["Products"] = GetProductsinCart();
                 TempData["message"] = "Coupon not exitst";
-                return View("Checkout",order);
+                return View("Checkout", order);
             }
-
-            // Retrieve the User ID from the claims
-            order.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            // Retrieve the Email from the claims
-            order.Email = User.FindFirstValue(ClaimTypes.Email);
 
             var shipping = _context.Settings.First().Shipping;
             if (shipping != null)
@@ -95,7 +85,6 @@ namespace Ecommerce.Controllers
         [HttpPost]
         public IActionResult SubmitOrder(Models.db.Order order)
         {
-
             if (!ModelState.IsValid)
             {
                 ViewData["Products"] = GetProductsinCart();
@@ -130,6 +119,7 @@ namespace Ecommerce.Controllers
             order.CreateDate = DateTime.Now;
             order.SubTotal = products.Sum(x => x.RowSumPrice);
             order.Total = (order.SubTotal + order.Shipping ?? 0);
+            order.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             if (order.CouponDiscount != null)
             {

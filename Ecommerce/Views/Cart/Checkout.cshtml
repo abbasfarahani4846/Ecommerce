@@ -52,7 +52,6 @@
                 <input type="hidden" asp-for="CouponCode"/>
             }
             <input type="hidden" asp-for="UserId"/>
-            <input type="hidden" asp-for="Email"/>
 
             <div class="checkout_form">
                 <div class="row">
@@ -95,6 +94,10 @@
                         <div class="checkout_form_input">
                             <label> Phone <span>*</span></label>
                             <input type="text" asp-for="Phone">
+                        </div>
+                        <div class="checkout_form_input">
+                            <label> Email <span>*</span></label>
+                            <input type="text" asp-for="Email" type="email">
                         </div>
                         <div class="checkout_form_input">
                             <label> Comment <span>*</span></label>
