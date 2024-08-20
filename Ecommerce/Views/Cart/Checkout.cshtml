@@ -46,12 +46,13 @@
                 </div>
             </div>
         }
-        <form action="/cart/SubmitOrder" method="post">
+        <form asp-action="Checkout">
             @if (!string.IsNullOrEmpty(Model.CouponCode))
             {
                 <input type="hidden" asp-for="CouponCode"/>
             }
             <input type="hidden" asp-for="UserId"/>
+            <input type="hidden" asp-for="Shipping" />
 
             <div class="checkout_form">
                 <div class="row">
@@ -74,34 +75,42 @@
                         <div class="checkout_form_input">
                             <label>First Name <span>*</span></label>
                             <input type="text" asp-for="FirstName">
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
                         </div>
                         <div class="checkout_form_input">
                             <label>Last Name <span>*</span></label>
                             <input type="text" asp-for="LastName">
+                            <span asp-validation-for="LastName" class="text-danger"></span>
                         </div>
                         <div class="checkout_form_input">
                             <label>Company Name</label>
                             <input type="text" asp-for="CompanyName">
+                            <span asp-validation-for="CompanyName" class="text-danger"></span>
                         </div>
                         <div class="checkout_form_input">
                             <label>Address <span>*</span></label>
                             <input type="text" asp-for="Address">
+                            <span asp-validation-for="Address" class="text-danger"></span>
                         </div>
                         <div class="checkout_form_input">
                             <label>Town / City <span>*</span></label>
                             <input type="text" asp-for="City">
+                            <span asp-validation-for="City" class="text-danger"></span>
                         </div>
                         <div class="checkout_form_input">
                             <label> Phone <span>*</span></label>
                             <input type="text" asp-for="Phone">
+                            <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
                         <div class="checkout_form_input">
                             <label> Email <span>*</span></label>
                             <input type="text" asp-for="Email" type="email">
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         <div class="checkout_form_input">
-                            <label> Comment <span>*</span></label>
+                            <label> Comment</label>
                             <input type="text" asp-for="Comment">
+                            <span asp-validation-for="Comment" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-6">

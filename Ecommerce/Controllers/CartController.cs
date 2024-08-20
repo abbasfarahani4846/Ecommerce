@@ -53,43 +53,13 @@ namespace Ecommerce.Controllers
         }
         [Authorize]
         [HttpPost]
-        public IActionResult ApplyCouponCode([FromForm] string couponCode)
-        {
-            var order = new Models.db.Order();
-
-            var coupon = _context.Coupons.FirstOrDefault(c => c.Code == couponCode);
-
-            if (coupon != null)
-            {
-                order.CouponCode = coupon.Code;
-                order.CouponDiscount = coupon.Discount;
-            }
-            else
-            {
-                ViewData["Products"] = GetProductsinCart();
-                TempData["message"] = "Coupon not exitst";
-                return View("Checkout", order);
-            }
-
-            var shipping = _context.Settings.First().Shipping;
-            if (shipping != null)
-            {
-                order.Shipping = shipping;
-            }
-
-            ViewData["Products"] = GetProductsinCart();
-            return View("Checkout", order);
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult SubmitOrder(Models.db.Order order)
+        public IActionResult Checkout(Models.db.Order order)
         {
             if (!ModelState.IsValid)
             {
                 ViewData["Products"] = GetProductsinCart();
 
-                return RedirectToAction("Checkout", order);
+                return View(order);
             }
 
             //-------------------------------------------------------
@@ -109,7 +79,7 @@ namespace Ecommerce.Controllers
                     TempData["message"] = "Coupon not exitst";
                     ViewData["Products"] = GetProductsinCart();
 
-                    return RedirectToAction("Checkout", order);
+                    return View(order);
                 }
             }
 
@@ -151,8 +121,39 @@ namespace Ecommerce.Controllers
             _context.SaveChanges();
 
             // Redirect to PayPal
-            return RedirectToAction("RedirectToPayPal", new { orderId = order.Id });
+            return Redirect("/Cart/RedirectToPayPal?orderId=" + order.Id);
         }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult ApplyCouponCode([FromForm] string couponCode)
+        {
+            var order = new Models.db.Order();
+
+            var coupon = _context.Coupons.FirstOrDefault(c => c.Code == couponCode);
+
+            if (coupon != null)
+            {
+                order.CouponCode = coupon.Code;
+                order.CouponDiscount = coupon.Discount;
+            }
+            else
+            {
+                ViewData["Products"] = GetProductsinCart();
+                TempData["message"] = "Coupon not exitst";
+                return View("Checkout", order);
+            }
+
+            var shipping = _context.Settings.First().Shipping;
+            if (shipping != null)
+            {
+                order.Shipping = shipping;
+            }
+
+            ViewData["Products"] = GetProductsinCart();
+            return View("Checkout", order);
+        }
+
 
         public ActionResult RedirectToPayPal(int orderId)
         {
