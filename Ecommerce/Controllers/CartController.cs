@@ -57,6 +57,7 @@ namespace Ecommerce.Controllers
         {
             if (!ModelState.IsValid)
             {
+
                 ViewData["Products"] = GetProductsinCart();
 
                 return View(order);
