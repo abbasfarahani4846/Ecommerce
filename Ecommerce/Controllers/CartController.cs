@@ -267,6 +267,8 @@ namespace Ecommerce.Controllers
                 order.Status = executedPayment.state.ToLower();
                 _context.SaveChanges();
 
+                ViewData["orderId"] = order.id;
+
                 return View("PaymentSuccess");
             }
             catch (Exception)
