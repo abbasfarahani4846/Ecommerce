@@ -267,7 +267,7 @@ namespace Ecommerce.Controllers
                 order.Status = executedPayment.state.ToLower();
                 _context.SaveChanges();
 
-                ViewData["orderId"] = order.id;
+                ViewData["orderId"] = order.Id;
 
                 return View("PaymentSuccess");
             }
