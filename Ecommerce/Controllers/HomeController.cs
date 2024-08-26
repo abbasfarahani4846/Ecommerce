@@ -2,6 +2,7 @@ using Ecommerce.Models;
 using Ecommerce.Models.db;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 using System.Diagnostics;
 
@@ -21,8 +22,19 @@ namespace Ecommerce.Controllers
         public IActionResult Index()
         {
             var banners = _context.Banners.ToList();
-            ViewData["banners"] = null;
+            ViewData["banners"] = banners;
 
+            //----------------------------------------------------
+            var newProducts =_context.Products.OrderByDescending(x=>x.Id).Take(8).ToList();
+
+            ViewData["newProducts"] = newProducts;
+
+            //----------------------------------------------------
+
+            var bestSellingProducts = _context.BestSellingFinals.ToList();
+            ViewData["bestSellingProducts"] = bestSellingProducts;
+
+            //----------------------------------------------------
             return View();
         }
 
