@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using Ecommerce.Models.db;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ecommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class ProductsController : Controller
     {
         private readonly OnlineShopContext _context;

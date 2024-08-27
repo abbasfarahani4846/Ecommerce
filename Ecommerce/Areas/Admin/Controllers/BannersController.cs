@@ -9,10 +9,12 @@ using Ecommerce.Models.db;
 using Microsoft.Extensions.Hosting;
 using System.Drawing;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ecommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class BannersController : Controller
     {
         private readonly OnlineShopContext _context;

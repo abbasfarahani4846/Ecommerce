@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Ecommerce.Models.db;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ecommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class UsersController : Controller
     {
         private readonly OnlineShopContext _context;
@@ -22,7 +24,7 @@ namespace Ecommerce.Areas.Admin.Controllers
         // GET: Admin/Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Users.ToListAsync());
+            return View(await _context.Users.OrderByDescending(x => x.Id).ToListAsync());
         }
 
         // GET: Admin/Users/Details/5
@@ -40,28 +42,6 @@ namespace Ecommerce.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            return View(user);
-        }
-
-        // GET: Admin/Users/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Admin/Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Email,FullName,Password,IsAdmin,RegisterDate,RecoveryCode")] User user)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
             return View(user);
         }
 
@@ -86,7 +66,7 @@ namespace Ecommerce.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Email,FullName,Password,IsAdmin,RegisterDate,RecoveryCode")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Email,FullName,Password,IsAdmin,RegisterDate,RecoveryCode")] Ecommerce.Models.db.User user)
         {
             if (id != user.Id)
             {

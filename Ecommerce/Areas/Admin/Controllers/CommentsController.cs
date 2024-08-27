@@ -12,22 +12,22 @@ namespace Ecommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "admin")]
-    public class CouponsController : Controller
+    public class CommentsController : Controller
     {
         private readonly OnlineShopContext _context;
 
-        public CouponsController(OnlineShopContext context)
+        public CommentsController(OnlineShopContext context)
         {
             _context = context;
         }
 
-        // GET: Admin/Coupons
+        // GET: Admin/Comments
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Coupons.ToListAsync());
+            return View(await _context.Comments.OrderByDescending(x => x.Id).ToListAsync());
         }
 
-        // GET: Admin/Coupons/Details/5
+        // GET: Admin/Comments/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -35,39 +35,39 @@ namespace Ecommerce.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var coupon = await _context.Coupons
+            var comment = await _context.Comments
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (coupon == null)
+            if (comment == null)
             {
                 return NotFound();
             }
 
-            return View(coupon);
+            return View(comment);
         }
 
-        // GET: Admin/Coupons/Create
+        // GET: Admin/Comments/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Admin/Coupons/Create
+        // POST: Admin/Comments/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Code,Discount")] Coupon coupon)
+        public async Task<IActionResult> Create([Bind("Id,Name,Email,CommentText,ProductId,CreateDate")] Comment comment)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(coupon);
+                _context.Add(comment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(coupon);
+            return View(comment);
         }
 
-        // GET: Admin/Coupons/Edit/5
+        // GET: Admin/Comments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -75,22 +75,24 @@ namespace Ecommerce.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var coupon = await _context.Coupons.FindAsync(id);
-            if (coupon == null)
+            var comment = await _context.Comments.FindAsync(id);
+            if (comment == null)
             {
                 return NotFound();
             }
-            return View(coupon);
+
+            ViewData["Product"] = _context.Products.FirstOrDefault(x => x.Id == comment.ProductId);
+            return View(comment);
         }
 
-        // POST: Admin/Coupons/Edit/5
+        // POST: Admin/Comments/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Code,Discount")] Coupon coupon)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Email,CommentText,ProductId,CreateDate")] Comment comment)
         {
-            if (id != coupon.Id)
+            if (id != comment.Id)
             {
                 return NotFound();
             }
@@ -99,12 +101,12 @@ namespace Ecommerce.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(coupon);
+                    _context.Update(comment);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CouponExists(coupon.Id))
+                    if (!CommentExists(comment.Id))
                     {
                         return NotFound();
                     }
@@ -115,10 +117,10 @@ namespace Ecommerce.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(coupon);
+            return View(comment);
         }
 
-        // GET: Admin/Coupons/Delete/5
+        // GET: Admin/Comments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -126,34 +128,34 @@ namespace Ecommerce.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var coupon = await _context.Coupons
+            var comment = await _context.Comments
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (coupon == null)
+            if (comment == null)
             {
                 return NotFound();
             }
 
-            return View(coupon);
+            return View(comment);
         }
 
-        // POST: Admin/Coupons/Delete/5
+        // POST: Admin/Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var coupon = await _context.Coupons.FindAsync(id);
-            if (coupon != null)
+            var comment = await _context.Comments.FindAsync(id);
+            if (comment != null)
             {
-                _context.Coupons.Remove(coupon);
+                _context.Comments.Remove(comment);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CouponExists(int id)
+        private bool CommentExists(int id)
         {
-            return _context.Coupons.Any(e => e.Id == id);
+            return _context.Comments.Any(e => e.Id == id);
         }
     }
 }

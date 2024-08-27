@@ -1,26 +1,12 @@
-﻿USE [OnlineShop]
-GO
-
-/****** Object:  Table [dbo].[Comment]    Script Date: 7/24/2024 11:15:34 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE TABLE [dbo].[Comment](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](50) NOT NULL,
-	[Email] [nvarchar](50) NOT NULL,
-	[CommentText] [nvarchar](1000) NOT NULL,
-	[ProductId] [int] NOT NULL,
-	[CreateDate] [datetime] NOT NULL,
- CONSTRAINT [PK_Comment] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-
-GO
-
-
+﻿1-user orders *
+2-user dashbpard *
+2.1-add to cart check qty and show error *
+3-admin orders *
+4-admin dashboard
+5-admin users *
+6-admin comments*
+7-admin setting *
+8- show setting items in foter *
+9-admin authroize *
+10->add to cart button in product detail
+11- add to cart button in  product detail related products
