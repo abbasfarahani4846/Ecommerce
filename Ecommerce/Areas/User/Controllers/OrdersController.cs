@@ -27,7 +27,9 @@ namespace Ecommerce.Areas.User.Controllers
         {
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            return View(await _context.Orders.Where(x => x.UserId == userId).OrderByDescending(x=>x.Id).ToListAsync());
+            var result = await _context.Orders.Where(x => x.UserId == userId).OrderByDescending(x=>x.Id).ToListAsync();
+
+            return View(result);
         }
 
         // GET: User/Orders/Details/5
