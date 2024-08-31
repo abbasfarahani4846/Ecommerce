@@ -7,8 +7,6 @@ public partial class BestSellingFinal
 {
     public int ProductId { get; set; }
 
-    public decimal? TotalCount { get; set; }
-
     public string? ImageName { get; set; }
 
     public decimal? Discount { get; set; }
@@ -20,4 +18,6 @@ public partial class BestSellingFinal
     public string? Status { get; set; }
 
     public decimal? Price { get; set; }
+
+    public int? TotalCount { get; set; }
 }

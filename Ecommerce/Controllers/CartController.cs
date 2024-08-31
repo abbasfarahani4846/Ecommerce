@@ -265,6 +265,17 @@ namespace Ecommerce.Controllers
                 // Save the PayPal transaction ID and update order status
                 order.TransId = executedPayment.transactions[0].related_resources[0].sale.id;
                 order.Status = executedPayment.state.ToLower();
+
+                var products = _context.OrderDetails
+                                    .Join(
+                                        _context.Products,
+                                        orderDetail => orderDetail.ProductId,
+                                        product => product.Id,
+                                        (orderDetail, product) => product as Product
+                                    ).ToList();
+
+                
+
                 _context.SaveChanges();
 
                 ViewData["orderId"] = order.Id;

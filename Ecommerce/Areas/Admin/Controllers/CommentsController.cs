@@ -45,28 +45,6 @@ namespace Ecommerce.Areas.Admin.Controllers
             return View(comment);
         }
 
-        // GET: Admin/Comments/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Admin/Comments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Email,CommentText,ProductId,CreateDate")] Comment comment)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(comment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(comment);
-        }
-
         // GET: Admin/Comments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

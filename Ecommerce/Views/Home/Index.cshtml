@@ -34,12 +34,11 @@
                         <div class="row">
                             <div class="col-lg-6 col-md-7">
                                 <div class="slider_text">
-
                                     <h1>
-                                        @item.Title
+                                        @Html.Raw(item.Title.Replace("\n","<br/>"))
                                     </h1>
                                     <p>
-                                        @item.Description
+                                      @Html.Raw(item.Description.Replace("\n","<br/>"))
                                     </p>
                                     <a class="btn btn-primary" href="@item.Link">Explore Now</a>
                                 </div>
@@ -119,10 +118,9 @@
                         <img src="/images/banners/@item.ImageName" alt="@item.Title">
                         <figcaption class="banner_text position-absolute">
                             <h3>
-                                @item.Title
+                                  @Html.Raw(item.Title.Replace("\n","<br/>"))
                             </h3>
-                            <p>
-                                @item.Description
+                            <p>@Html.Raw(item.Description.Replace("\n","<br/>"))
                             </p>
                             @if (!string.IsNullOrEmpty(item.Link))
                             {
@@ -217,52 +215,7 @@
                                     </div>
 
                                 </div>
-                         @*        <article class="col single_product">
-                                    <figure>
-                                        <div class="product_thumb">
-                                            <a href="/Product/productdetails/@item.ProductId">
-                                                <img class="primary_img" src="/images/products/@item.ImageName"
-                                                     alt="@item.Title">
-                                            </a>
-                                            @if (item.Discount != null)
-                                            {
-                                                <div class="product_label">
-                                                    @{
-                                                        var discountPercentage = ((double)item.Discount / (double)item.Price) * 100;
-                                                        <span>
-                                                            %@discountPercentage.ToString("F0")
-                                                        </span>
-                                                    }
 
-                                                </div>
-                                            }
-                                        </div>
-                                        <figcaption class="product_content text-center">
-                                            <h4 class="product_name">
-                                                <a href="/Product/productdetails/@item.ProductId">
-                                                    @item.Title
-                                                </a>
-                                            </h4>
-                                            <div class="price_box">
-                                                @if (item.Discount != null)
-                                                {
-                                                    <span class="current_price">$@(item.Price - item.Discount)</span>
-                                                    <span class="old_price">$@item.Price</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="current_price">$@item.Price</span>
-                                                }
-                                            </div>
-
-                                            <div class="add_to_cart">
-                                                <a class="btn btn-primary" onclick="updateCart(@item.ProductId,1)" data-tippy="Add To Cart"
-                                                   data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true"
-                                                   data-tippy-placement="top">Add To Cart</a>
-                                            </div>
-                                        </figcaption>
-                                    </figure>
-                                </article> *@
                             }
                         }
                     </div>
@@ -286,10 +239,10 @@
                             <img src="/images/banners/@item.ImageName" alt="@item.Title">
                             <div class="banner_text position-absolute">
                                 <h3>
-                                    @item.Title
+                                    @Html.Raw(item.Title.Replace("\n","<br/>"))
                                 </h3>
                                 <p>
-                                    @item.Description
+                                    @Html.Raw(item.Description.Replace("\n","<br/>"))
                                 </p>
                                 <a class="btn btn-primary" href="@item.Link">Shop Now</a>
                             </div>
@@ -382,52 +335,6 @@
                                     </div>
 
                                 </div>
-                    @*             <article class="col single_product">
-                                    <figure>
-                                        <div class="product_thumb">
-                                            <a href="/Product/productdetails/@item.Id">
-                                                <img class="primary_img" src="/images/products/@item.ImageName"
-                                                     alt="@item.Title">
-                                            </a>
-                                            @if (item.Discount != null)
-                                            {
-                                                <div class="product_label">
-                                                    @{
-                                                        var discountPercentage = ((double)item.Discount / (double)item.Price) * 100;
-                                                        <span>
-                                                            %@discountPercentage.ToString("F0")
-                                                        </span>
-                                                    }
-
-                                                </div>
-                                            }
-                                        </div>
-                                        <figcaption class="product_content text-center">
-                                            <h4 class="product_name">
-                                                <a href="/Product/productdetails/@item.Id">
-                                                    @item.Title
-                                                </a>
-                                            </h4>
-                                            <div class="price_box">
-                                                @if (item.Discount != null)
-                                                {
-                                                    <span class="current_price">$@(item.Price - item.Discount)</span>
-                                                    <span class="old_price">$@item.Price</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="current_price">$@item.Price</span>
-                                                }
-                                            </div>
-
-                                            <div class="add_to_cart">
-                                                <a class="btn btn-primary" onclick="updateCart(@item.Id,1)" data-tippy="Add To Cart"
-                                                   data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true"
-                                                   data-tippy-placement="top">Add To Cart</a>
-                                            </div>
-                                        </figcaption>
-                                    </figure>
-                                </article> *@
                             }
                         }
                     </div>

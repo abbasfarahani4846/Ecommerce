@@ -69,7 +69,6 @@ public partial class OnlineShopContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(500)
                 .HasColumnName("TItle");
-            entity.Property(e => e.TotalCount).HasColumnType("money");
         });
 
         modelBuilder.Entity<BestSellingProduct>(entity =>

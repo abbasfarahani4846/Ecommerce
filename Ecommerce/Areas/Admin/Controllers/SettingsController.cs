@@ -21,12 +21,6 @@ namespace Ecommerce.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: Admin/Settings
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Settings.FirstAsync());
-        }
-
         // GET: Admin/Settings/Edit/5
         public async Task<IActionResult> Edit()
         {
