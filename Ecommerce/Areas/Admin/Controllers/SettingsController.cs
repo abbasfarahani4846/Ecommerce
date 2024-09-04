@@ -24,12 +24,12 @@ namespace Ecommerce.Areas.Admin.Controllers
         // GET: Admin/Settings/Edit/5
         public async Task<IActionResult> Edit()
         {
-
             var setting = await _context.Settings.FirstAsync();
             if (setting == null)
             {
                 return NotFound();
             }
+
             return View(setting);
         }
 
@@ -38,7 +38,9 @@ namespace Ecommerce.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Shipping,Title,Address,Phone,CopyRight,Instagram,FaceBook,GooglePlus,Youtube,Twitter,Logo")] Setting setting,IFormFile? newLogo)
+        public async Task<IActionResult> Edit(int id,
+            [Bind("Id,Shipping,Title,Address,Phone,CopyRight,Instagram,FaceBook,GooglePlus,Youtube,Twitter,Logo")]
+            Setting setting, IFormFile? newLogo)
         {
             if (id != setting.Id)
             {
@@ -51,23 +53,30 @@ namespace Ecommerce.Areas.Admin.Controllers
                 {
                     if (newLogo != null)
                     {
-                        setting.Logo = Guid.NewGuid() + Path.GetExtension(newLogo.FileName);
-                        //------------------------------------------------
+                       
                         string d = Directory.GetCurrentDirectory();
-                        string fn = d + "\\wwwroot\\images\\" + setting.Logo;
+                        string path = d + "\\wwwroot\\images\\" + setting.Logo;
+                        //------------------------------------------------
+                        if (System.IO.File.Exists(path))
+                        {
+                            System.IO.File.Delete(path);
+                        }
+
+                        //------------------------------------------------
+                        setting.Logo = Guid.NewGuid() + Path.GetExtension(newLogo.FileName);
+                        path = d + "\\wwwroot\\images\\" + setting.Logo;
                         //------------------------------------------------
 
-                        using (var stream = new FileStream(fn, FileMode.Create))
+                        using (var stream = new FileStream(path, FileMode.Create))
                         {
                             newLogo.CopyTo(stream);
                         }
-
                     }
 
                     _context.Update(setting);
                     await _context.SaveChangesAsync();
 
-                    ViewData["message"] = "Setting saved";
+                    TempData["message"] = "Setting saved";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -81,10 +90,11 @@ namespace Ecommerce.Areas.Admin.Controllers
                     }
                 }
             }
-            return View(setting);
+
+            return Redirect($"/admin/Settings/Edit");
         }
 
-    
+
         private bool SettingExists(int id)
         {
             return _context.Settings.Any(e => e.Id == id);

@@ -1,19 +1,13 @@
-﻿
-
-using Ecommerce.Models;
+﻿using Ecommerce.Models;
 using Ecommerce.Models.db;
 using Ecommerce.Models.ViewModels;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 using PayPal.Api;
-
 using System.Net;
 using System.Security.Claims;
 
@@ -24,7 +18,9 @@ namespace Ecommerce.Controllers
         private OnlineShopContext _context;
         private IHttpContextAccessor _httpContextAccessor;
         IConfiguration _configuration;
-        public CartController(OnlineShopContext context, IHttpContextAccessor httpContextAccessor, IConfiguration iconfiguration)
+
+        public CartController(OnlineShopContext context, IHttpContextAccessor httpContextAccessor,
+            IConfiguration iconfiguration)
         {
             _httpContextAccessor = httpContextAccessor;
             _configuration = iconfiguration;
@@ -37,6 +33,7 @@ namespace Ecommerce.Controllers
 
             return View(result);
         }
+
         [Authorize]
         public IActionResult Checkout()
         {
@@ -51,13 +48,13 @@ namespace Ecommerce.Controllers
             ViewData["Products"] = GetProductsinCart();
             return View(order);
         }
+
         [Authorize]
         [HttpPost]
         public IActionResult Checkout(Models.db.Order order)
         {
             if (!ModelState.IsValid)
             {
-
                 ViewData["Products"] = GetProductsinCart();
 
                 return View(order);
@@ -117,6 +114,7 @@ namespace Ecommerce.Controllers
 
                 orderDetails.Add(orderDetailItem);
             }
+
             //-------------------------------------------------------
             _context.OrderDetails.AddRange(orderDetails);
             _context.SaveChanges();
@@ -181,32 +179,31 @@ namespace Ecommerce.Controllers
                     intent = "sale",
                     payer = new Payer { payment_method = "paypal" },
                     transactions = new List<Transaction>
-            {
-                new Transaction
-                {
-                    description = $"Order {order.Id}",
-                    invoice_number = Guid.NewGuid().ToString(),
-                    amount = new Amount
                     {
-                        currency = "USD",
-                        total = order.Total?.ToString("F"),
-                        //total = "5.00"
-                    },
-
-                    item_list = new ItemList
-                    {
-                        items = orderDetails.Select(p => new Item
+                        new Transaction
                         {
-                            name = p.ProductTitle,
-                            currency = "USD",
-                            price = p.ProductPrice.ToString("F"),
-                            quantity = p.Count.ToString(),
-                            sku = p.ProductId.ToString(),
-                        }).ToList(),
+                            description = $"Order {order.Id}",
+                            invoice_number = Guid.NewGuid().ToString(),
+                            amount = new Amount
+                            {
+                                currency = "USD",
+                                total = order.Total?.ToString("F"),
+                                //total = "5.00"
+                            },
 
+                            item_list = new ItemList
+                            {
+                                items = orderDetails.Select(p => new Item
+                                {
+                                    name = p.ProductTitle,
+                                    currency = "USD",
+                                    price = p.ProductPrice.ToString("F"),
+                                    quantity = p.Count.ToString(),
+                                    sku = p.ProductId.ToString(),
+                                }).ToList(),
+                            },
+                        }
                     },
-                }
-            },
                     redirect_urls = new RedirectUrls
                     {
                         cancel_url = $"{baseURI}&Cancel=true",
@@ -266,16 +263,19 @@ namespace Ecommerce.Controllers
                 order.TransId = executedPayment.transactions[0].related_resources[0].sale.id;
                 order.Status = executedPayment.state.ToLower();
 
-                var products = _context.OrderDetails
-                                    .Join(
-                                        _context.Products,
-                                        orderDetail => orderDetail.ProductId,
-                                        product => product.Id,
-                                        (orderDetail, product) => product as Product
-                                    ).ToList();
+                var orderDetails = _context.OrderDetails.Where(x => x.OrderId == orderId).ToList();
 
+                var productsIds = orderDetails.Select(x => x.ProductId);
+
+                var products = _context.Products.Where(x => productsIds.Contains(x.Id)).ToList();
+
+                foreach (var item in products)
+                {
+                    item.Qty -= orderDetails.FirstOrDefault(x => x.ProductId == item.Id).Count;
+                    
+                }
                 
-
+                _context.Products.UpdateRange(products);
                 _context.SaveChanges();
 
                 ViewData["orderId"] = order.Id;
@@ -355,6 +355,7 @@ namespace Ecommerce.Controllers
 
             return PartialView(result);
         }
+
         public IActionResult ClearCart()
         {
             Response.Cookies.Delete("Cart");
@@ -397,6 +398,7 @@ namespace Ecommerce.Controllers
 
             return result;
         }
+
         public List<CartViewModel> GetCartItems()
         {
             List<CartViewModel> cartList = new List<CartViewModel>();
@@ -412,6 +414,5 @@ namespace Ecommerce.Controllers
 
             return cartList;
         }
-
     }
 }

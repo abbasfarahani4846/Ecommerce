@@ -10,16 +10,17 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        @if (ViewData["message"] != null)
+        @if (TempData["message"] != null)
         {
             <div class="alert alert-success" role="alert">
-                @ViewData["message"]
+                @TempData["message"]
             </div>
         }
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Logo" />
+            
             <div class="form-group">
                 <label asp-for="Shipping" class="control-label"></label>
                 <input asp-for="Shipping" class="form-control" />
