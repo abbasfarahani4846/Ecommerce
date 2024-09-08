@@ -45,54 +45,21 @@
     
     // Slick Slider Activation
     $('.zoom_tab_img').slick({
-        centerMode: true,
         centerPadding: '0',
         slidesToShow: 4,
         arrows:false,
         vertical: true,
         focusOnSelect: true,
         asNavFor: '.product_zoom_main_img',
-        responsive:[
-            {
-              breakpoint: 576,
-              settings: {
-                slidesToShow: 3,
-                 vertical: false,  
-                  arrows: false,
-              }
-            },
-            {
-              breakpoint: 768,
-              settings: {
-                  slidesToShow: 4,
-              }
-            },
-            {
-              breakpoint: 992,
-              settings: {
-                slidesToShow: 3,
-              }
-            },
-        ]
-
     });
     
     // Slick Slider Activation
     $('.product_zoom_main_img').slick({
-        centerMode: true,
         centerPadding: '0',
         slidesToShow: 1,
         arrows:false,
         vertical: true,
         asNavFor: '.zoom_tab_img',
-        responsive:[
-            {
-              breakpoint: 576,
-              settings: {
-                 vertical: false,  
-              }
-            },
-        ]
     });
     
     

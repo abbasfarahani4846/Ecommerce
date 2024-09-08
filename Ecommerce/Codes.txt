@@ -2,13 +2,13 @@
 2-user dashbpard * ✓
 2.1-add to cart check qty and show error * ✓
 3-admin orders *  ✓
-4-admin dashboard *
+4-admin dashboard * ✓
 5-admin users * ✓
 6-admin comments* ✓
-7-admin setting *
-8-show setting items in foter *
-9-admin authroize *
+7-admin setting * ✓
+8-show setting items in foter * ✓
+9-admin authroize * 
 10->add to cart button in product detail *  ✓
 11- add to cart button in  product detail related products *  ✓
 12-> textarea for banners ✓
-13-> reduce qty after success payment
+13-> reduce qty after success payment ✓

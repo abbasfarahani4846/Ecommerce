@@ -88,7 +88,7 @@ namespace Ecommerce.Controllers
             claims.Add(new Claim(ClaimTypes.Name, findUser.FullName));
             claims.Add(new Claim(ClaimTypes.Email, findUser.Email));
             claims.Add(new Claim(ClaimTypes.Role, findUser.IsAdmin ? "admin" : "user"));
-
+            
             // Create an identity based on the claims
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
